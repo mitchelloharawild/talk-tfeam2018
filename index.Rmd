@@ -66,8 +66,6 @@ class: center
 .animated.fadeIn[
 ## Time-series data is changing
 
-### More data, more often.
-
 <hr>
 ]
 
@@ -76,18 +74,16 @@ class: center
 
 ## Time-series data is changing
 
-### More data, more often.
-
 <hr>
 
 .animated.fadeIn[
-## Complicated patterns emerge
-
 .pull-left[
 ### Multiple seasonality
-### Lots of data
+### Irregular time intervals
+### Frequent obsrevations
 ]
 .pull-right[
+### Many variables and series
 ### Missing values
 ### Additional noise
 ]
@@ -102,17 +98,15 @@ class: center
 
 ## Time-series data is changing
 
-### More data, more often.
-
 <hr>
-
-## Complicated patterns emerge
 
 .pull-left[
 ### Multiple seasonality
-### Lots of data
+### Irregular time intervals
+### Frequent obsrevations
 ]
 .pull-right[
+### Many variables and series
 ### Missing values
 ### Additional noise
 ]
@@ -130,7 +124,45 @@ class: center
 
 class: inverse, top
 
-.sticker-float[![fasster](resources/fable.svg)]
+.sticker-float[![tsibble](resources/tsibble.svg)]
+
+.title[tsibble]
+
+<br>
+
+* A flexible time series data structure
+* Integrates seamlessly with the tidyverse
+
+More information:
+
+* `r fa("github", fill = "white")` [tidyverts/tsibble](https://github.com/tidyverts/tsibble)
+* `r fa("desktop", fill = "white")` [NY Meetup](http://slides.earo.me/bigapple/) & [useR2018](http://slides.earo.me/useR18/)
+
+---
+
+## Formula model specification
+
+To simplify model building, we use a model formula.
+This should be more familiar to those who have done regression modelling.
+
+```{r, eval = FALSE, echo = TRUE}
+t(y) ~ {model specification}
+```
+
+### LHS: Response
+* Defines the response variable from the data
+* Specification of transformations
+  (which are automatically back-transformed)
+
+### RHS: Specials
+* Model specific special functions
+* Exogenous regressors (if supported by model)
+
+---
+
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
 
 .title[Thanks! `r fa("comments", fill = "white")`]
 
