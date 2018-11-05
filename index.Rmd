@@ -195,7 +195,26 @@ vic_cafe %>%
 
 ---
 
-## Formula model specification
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[fable]
+
+* A tidy reimplementation of `forecast`
+* Encourages flexible and transparent model design
+* Many more features (the content of this talk!)
+
+<br>
+
+More information:
+
+* `r fa("github", fill = "white")` [tidyverts/fable](https://github.com/tidyverts/fable)
+* `r fa("desktop", fill = "white")` [TFEAM](#) & [useR!2018](https://github.com/robjhyndman/fable-talk-2018/raw/master/fable_useR2018.pdf)
+
+---
+
+## Model specification - with formulas
 
 Using a formula is a concise method of model specification, and is used in most modelling functions in R. Use of a formula is rare in time series modelling, leading to complicated documentation and verbose interfaces.
 
