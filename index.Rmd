@@ -39,6 +39,27 @@ opts_chunk$set(
   cache = TRUE, external = TRUE, dev = 'svglite', dev.args = list(bg = "transparent")
 )
 
+hook_output <- knit_hooks$get("output")
+knit_hooks$set(output = function(x, options) {
+   lines <- options$output.lines
+   if (is.null(lines)) {
+     return(hook_output(x, options))  # pass to default hook
+   }
+   x <- unlist(strsplit(x, "\n"))
+   more <- "..."
+   if (length(lines)==1) {        # first n lines
+     if (length(x) > lines) {
+       # truncate the output, but add ....
+       x <- c(head(x, lines), more)
+     }
+   } else {
+     x <- c(more, x[lines], more)
+   }
+   # paste these lines together
+   x <- paste(c(x, ""), collapse = "\n")
+   hook_output(x, options)
+ })
+
 theme_set(
   theme_grey(base_size = 16) + 
   theme(
@@ -203,13 +224,31 @@ t(y) ~ {model specification}
 
 ---
 
-## Victorian cafe and restaurant turnover
+## The modelling basics
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
 ```{r ets-fit, echo = TRUE}
 vic_cafe %>% 
-  ETS(Turnover ~ season("M"))
+  fable::ETS(Turnover ~ season("M"))
 ```
+]
+]
 
+--
 
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r ets-fc-fit, echo = TRUE, output.lines = 1:10}
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+  forecast::ets("ZZM")
+```
+]
+]
 ---
 
 class: inverse, top

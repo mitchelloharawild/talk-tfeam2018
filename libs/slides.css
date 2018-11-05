@@ -55,9 +55,27 @@ a, a > code {
 	height: 200px;
 	float: right;
 }
+
+.sticker-left img{
+	height: 150px;
+	padding-right: 20px;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.sticker-content-right img{
+  display: inherit;
+}
+
 .sticker img{
   height: 200px;
-  display:inline;
 }
 
 p, li {

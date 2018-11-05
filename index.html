@@ -184,11 +184,15 @@ t(y) ~ {model specification}
 
 ---
 
-## Victorian cafe and restaurant turnover
+## The modelling basics
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
 
 ```r
 vic_cafe %&gt;% 
-  ETS(Turnover ~ season("M"))
+  fable::ETS(Turnover ~ season("M"))
 ```
 
 ```
@@ -198,8 +202,38 @@ vic_cafe %&gt;%
 #&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
 #&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
 ```
+]
+]
 
+--
 
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+  forecast::ets("ZZM")
+```
+
+```
+...
+#&gt; ETS(M,Ad,M) 
+#&gt; 
+#&gt; Call:
+#&gt;  forecast::ets(y = ., model = "ZZM") 
+#&gt; 
+#&gt;   Smoothing parameters:
+#&gt;     alpha = 0.6299 
+#&gt;     beta  = 0.0172 
+#&gt;     gamma = 1e-04 
+#&gt;     phi   = 0.98 
+...
+```
+]
+]
 ---
 
 class: inverse, top
