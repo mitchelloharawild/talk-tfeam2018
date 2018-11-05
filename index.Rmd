@@ -268,7 +268,90 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>%
 ```
 ]
 ]
+
 ---
+
+## Modelling with transformations
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+```{r ets-fit-log, echo = TRUE}
+vic_cafe %>% 
+  fable::ETS(log(Turnover) ~ season("A"))
+```
+]
+]
+
+--
+
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r ets-fc-fit-log, echo = TRUE, output.lines = 1:10}
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+  forecast::ets("ZZA", lambda = 0)
+```
+]
+]
+
+---
+
+## fable flexibility
+
+```{r ets-fit-logp1v1, echo = TRUE, eval = FALSE}
+vic_cafe %>% 
+  fable::ETS(log(Turnover + 1) ~ season("A"))
+```
+
+--
+
+```{r ets-fit-logp1v2, echo = TRUE, eval = FALSE}
+vic_cafe %>% 
+  fable::ETS(log1p(Turnover) ~ season("A"))
+```
+
+--
+
+```{r ets-fit-season, echo = TRUE, eval = FALSE}
+vic_cafe %>% 
+  fable::ETS(Turnover ~ season(c("A", "M")))
+```
+
+---
+
+## Producing forecasts
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+```{r ets-fc-log, echo = TRUE}
+vic_cafe %>% 
+  fable::ETS(log(Turnover) ~ season("A")) %>% 
+  forecast(h=12)
+```
+]
+]
+
+--
+
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r ets-fc-fc-log, echo = TRUE, output.lines = 1:10}
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+  forecast::ets("ZZA", lambda = 0) %>% 
+  forecast(h=12)
+```
+]
+]
+
+---
+
 
 class: inverse, top
 

@@ -253,7 +253,154 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 ```
 ]
 ]
+
 ---
+
+## Modelling with transformations
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+vic_cafe %&gt;% 
+  fable::ETS(log(Turnover) ~ season("A"))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model     
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;   
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(A,A,A)
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+  forecast::ets("ZZA", lambda = 0)
+```
+
+```
+...
+#&gt; ETS(A,A,A) 
+#&gt; 
+#&gt; Call:
+#&gt;  forecast::ets(y = ., model = "ZZA", lambda = 0) 
+#&gt; 
+#&gt;   Box-Cox transformation: lambda= 0 
+#&gt; 
+#&gt;   Smoothing parameters:
+#&gt;     alpha = 0.5827 
+#&gt;     beta  = 1e-04 
+...
+```
+]
+]
+
+---
+
+## fable flexibility
+
+
+```r
+vic_cafe %&gt;% 
+  fable::ETS(log(Turnover + 1) ~ season("A"))
+```
+
+--
+
+
+```r
+vic_cafe %&gt;% 
+  fable::ETS(log1p(Turnover) ~ season("A"))
+```
+
+--
+
+
+```r
+vic_cafe %&gt;% 
+  fable::ETS(Turnover ~ season(c("A", "M")))
+```
+
+---
+
+## Producing forecasts
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+vic_cafe %&gt;% 
+  fable::ETS(log(Turnover) ~ season("A")) %&gt;% 
+  forecast(h=12)
+```
+
+```
+#&gt; # A fable: 12 x 5 [1M]
+#&gt; # Key:     State, Industry [1]
+#&gt;    State    Industry                                         Month  mean .distribution        
+#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt; &lt;dist&gt;               
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct  967. t(N(6.9, sd = 0.037))
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov  976. t(N(6.9, sd = 0.043))
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec 1098. t(N(7, sd = 0.048))  
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan  974. t(N(6.9, sd = 0.053))
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb  904. t(N(6.8, sd = 0.057))
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar  995. t(N(6.9, sd = 0.061))
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr  970. t(N(6.9, sd = 0.065))
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May  987. t(N(6.9, sd = 0.068))
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun  949. t(N(6.9, sd = 0.072))
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul  997. t(N(6.9, sd = 0.075))
+#&gt; 11 Victoria Cafes, restaurants and takeaway food services 2019 Aug 1005. t(N(6.9, sd = 0.078))
+#&gt; 12 Victoria Cafes, restaurants and takeaway food services 2019 Sep 1004. t(N(6.9, sd = 0.081))
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+  forecast::ets("ZZA", lambda = 0) %&gt;% 
+  forecast(h=12)
+```
+
+```
+...
+#&gt;          Point Forecast     Lo 80     Hi 80    Lo 95    Hi 95
+#&gt; Oct 2018       966.7464  921.8095 1013.8740 898.8731 1039.745
+#&gt; Nov 2018       975.4419  923.1571 1030.6881 896.6233 1061.189
+#&gt; Dec 2018      1096.4623 1030.8724 1166.2254 997.7547 1204.935
+#&gt; Jan 2019       972.2181  908.6335 1040.2522 876.6749 1078.174
+#&gt; Feb 2019       902.3025  838.6874  970.7429 806.8477 1009.050
+#&gt; Mar 2019       992.9353  918.2415 1073.7050 881.0032 1119.089
+#&gt; Apr 2019       968.3218  891.2067 1052.1096 852.9025 1099.360
+#&gt; May 2019       984.8963  902.3700 1074.9701 861.5204 1125.941
+#&gt; Jun 2019       946.6904  863.6415 1037.7254 822.6691 1089.408
+...
+```
+]
+]
+
+---
+
 
 class: inverse, top
 
