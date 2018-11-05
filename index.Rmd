@@ -102,7 +102,7 @@ class: center
 .pull-left[
 ### Multiple seasonality
 ### Irregular time intervals
-### Frequent obsrevations
+### Frequent observations
 ]
 .pull-right[
 ### Many variables and series
