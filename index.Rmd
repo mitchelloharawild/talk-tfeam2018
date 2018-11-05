@@ -203,6 +203,15 @@ t(y) ~ {model specification}
 
 ---
 
+## Victorian cafe and restaurant turnover
+```{r ets-fit, echo = TRUE}
+vic_cafe %>% 
+  ETS(Turnover ~ season("M"))
+```
+
+
+---
+
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]

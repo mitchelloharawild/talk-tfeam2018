@@ -184,6 +184,24 @@ t(y) ~ {model specification}
 
 ---
 
+## Victorian cafe and restaurant turnover
+
+```r
+vic_cafe %&gt;% 
+  ETS(Turnover ~ season("M"))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model      
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
+```
+
+
+---
+
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]
