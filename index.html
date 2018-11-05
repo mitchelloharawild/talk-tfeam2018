@@ -138,6 +138,52 @@ t(y) ~ {model specification}
 
 ---
 
+## A simple example
+
+
+```r
+tsibbledata::ausretail
+```
+
+```
+#&gt; # A tsibble: 78,840 x 5 [1M]
+#&gt; # Key:       State, Industry [180]
+#&gt;    State                        Industry                                 `Series ID`    Month Turnover
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;          &lt;mth&gt;    &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Apr      4.4
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 May      3.4
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jun      3.6
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jul      4  
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Aug      3.6
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Sep      4.2
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Oct      4.8
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Nov      5.4
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Dec      6.9
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
+#&gt; # ... with 78,830 more rows
+```
+
+&lt;!-- Features: --&gt;
+
+&lt;!-- * Monthly observations --&gt;
+&lt;!-- * One response variable --&gt;
+&lt;!-- * 180 individual series (by State and Industry) --&gt;
+
+.footnote[Source: Australian Bureau of Statistics. Catalogue No. 8501.0]
+
+---
+
+## Victorian cafe and restaurant turnover
+
+
+```r
+vic_cafe &lt;- tsibbledata::ausretail %&gt;% 
+  filter(State == "Victoria", Industry == "Cafes, restaurants and takeaway food services")
+```
+&lt;img src="figure/cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
 class: inverse, top
 
 .sticker-float[![fable](resources/fable.svg)]

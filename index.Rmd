@@ -172,6 +172,37 @@ t(y) ~ {model specification}
 
 ---
 
+## A simple example
+
+```{r, echo=TRUE}
+tsibbledata::ausretail
+```
+
+<!-- Features: -->
+
+<!-- * Monthly observations -->
+<!-- * One response variable -->
+<!-- * 180 individual series (by State and Industry) -->
+
+.footnote[Source: Australian Bureau of Statistics. Catalogue No. 8501.0]
+
+---
+
+## Victorian cafe and restaurant turnover
+
+```{r, echo=TRUE}
+vic_cafe <- tsibbledata::ausretail %>% 
+  filter(State == "Victoria", Industry == "Cafes, restaurants and takeaway food services")
+```
+```{r cafe-plot}
+vic_cafe %>% 
+  autoplot(Turnover) + 
+  ggtitle("Victorian cafe, restaurant and takeaway turnover") + 
+  ylab("Turnover ($Million AUD)")
+```
+
+---
+
 class: inverse, top
 
 .sticker-float[![fable](resources/fable.svg)]
