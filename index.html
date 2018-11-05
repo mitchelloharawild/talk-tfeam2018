@@ -108,36 +108,6 @@ More information:
 
 ---
 
-## Formula model specification
-
-Using a formula is a concise method of model specification, and is used in most modelling functions in R. Use of a formula is rare in time series modelling, leading to complicated documentation and verbose interfaces.
-
-
-```r
-t(y) ~ {model specification}
-```
-
---
-
-.pull-left[
-
-### LHS: Response
-* Defines the data's response variable
-* Specification of transformations
-  (with automatic back-transformation)
-]
-
---
-
-.pull-right[
-
-### RHS: Specials
-* Model specific special functions
-* Exogenous regressors
-]
-
----
-
 ## A simple example
 
 
@@ -182,6 +152,35 @@ vic_cafe &lt;- tsibbledata::ausretail %&gt;%
 ```
 &lt;img src="figure/cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+---
+
+## Formula model specification
+
+Using a formula is a concise method of model specification, and is used in most modelling functions in R. Use of a formula is rare in time series modelling, leading to complicated documentation and verbose interfaces.
+
+
+```r
+t(y) ~ {model specification}
+```
+
+--
+
+.pull-left[
+
+### LHS: Response
+* Defines the data's response variable
+* Specification of transformations
+  (with automatic back-transformation)
+]
+
+--
+
+.pull-right[
+
+### RHS: Specials
+* Model specific special functions
+* Exogenous regressors
+]
 
 ---
 
