@@ -201,6 +201,26 @@ vic_cafe %>%
   ylab("Turnover ($Million AUD)")
 ```
 
+
+---
+
+class: inverse, top
+
+.sticker-float[![fasster](resources/fasster.png)]
+
+.title[fasster]
+
+* A model for switching temporal patterns
+* Supports exogenous regressors and handles missing values
+* Flexible model specification
+
+<br>
+
+More information:
+
+* `r fa("github", fill = "white")` [tidyverts/fasster](https://github.com/tidyverts/fasster)
+* `r fa("desktop", fill = "white")` [useR!2018](https://mitchelloharawild.com/user2018/)
+
 ---
 
 class: inverse, top
