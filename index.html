@@ -179,7 +179,7 @@ Using a formula is a concise method of model specification, and is used in most 
 
 
 ```r
-t(y) ~ {model specification}
+t(y) ~ trend() + fourier(K = 6) + x
 ```
 
 --
