@@ -26,6 +26,7 @@ library(knitr)
 library(kableExtra)
 library(fontawesome)
 library(lubridate)
+library(htmltools)
 
 library(tsibble)
 library(fasster)
@@ -143,20 +144,31 @@ More information:
 ## Formula model specification
 
 To simplify model building, we use a model formula.
+
 This should be more familiar to those who have done regression modelling.
 
-```{r, eval = FALSE, echo = TRUE}
+```{r, echo = TRUE, eval = FALSE}
 t(y) ~ {model specification}
 ```
 
+--
+
+.pull-left[
+
 ### LHS: Response
-* Defines the response variable from the data
+* Defines the data's response variable
 * Specification of transformations
-  (which are automatically back-transformed)
+  (with automatic back-transformation)
+]
+
+--
+
+.pull-right[
 
 ### RHS: Specials
 * Model specific special functions
-* Exogenous regressors (if supported by model)
+* Exogenous regressors
+]
 
 ---
 
