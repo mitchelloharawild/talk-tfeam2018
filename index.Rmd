@@ -357,6 +357,32 @@ fc_fit %>% forecast(h=12)
 
 ---
 
+## Evaluating accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+```{r ets-accuracy-log, echo = TRUE}
+fbl_fit %>% accuracy()
+```
+]
+]
+
+--
+
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r ets-fc-accuracy-log, echo = TRUE}
+fc_fit %>% forecast::accuracy()
+```
+]
+]
+
+---
+
 
 class: inverse, top
 

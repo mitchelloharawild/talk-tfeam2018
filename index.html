@@ -402,6 +402,47 @@ fc_fit %&gt;% forecast(h=12)
 
 ---
 
+## Evaluating accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_fit %&gt;% accuracy()
+```
+
+```
+#&gt; # A tibble: 1 x 4
+#&gt; # Groups:   State [?]
+#&gt;   State    Industry                                             ME   RMSE
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                             &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services -0.000617 0.0365
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_fit %&gt;% forecast::accuracy()
+```
+
+```
+#&gt;                      ME     RMSE      MAE        MPE     MAPE      MASE      ACF1
+#&gt; Training set -0.5664244 14.88602 10.57455 -0.1282861 2.886738 0.3555479 0.1468925
+```
+]
+]
+
+---
+
 
 class: inverse, top
 
