@@ -253,7 +253,7 @@ t(y) ~ trend() + fourier(K = 6) + x
 
 ---
 
-## Exponential smoothing
+## A simple example
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
@@ -320,40 +320,57 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>%
 
 ---
 
-## Modelling with exogenous regressors
+## A more realistic example
 
-```{r elecdemand}
+```{r elecdemand, echo = TRUE}
 tsibbledata::elecdemand
 ```
 
-
+.footnote[Source: Australian Energy Market Operator, and the Australian Bureau of Meteorology]
 
 ---
 
-# Electricity demand (Monthly)
+## Electricity demand (Monthly)
 ```{r elecMonthly}
 mp4_vid("resources/anim1.mp4")
 ```
 
 ---
 
-# Electricity demand (Daily)
+## Electricity demand (Daily)
 ```{r elecDaily}
 mp4_vid("resources/anim2.mp4")
 ```
 
 ---
 
-# Electricity demand (Half-hourly)
+## Electricity demand (Half-hourly)
 ```{r elecPlot}
 mp4_vid("resources/anim3.mp4")
 ```
 ---
 
-# Electricity demand (Half-hourly)
+## Electricity demand (Half-hourly)
 ```{r elecPlotZoom}
 mp4_vid("resources/anim4.mp4")
 ```
+---
+
+## Using exogenous information
+
+```{r fig.height=5}
+tsibbledata::elecdemand %>%
+  gather("Series", "Value", Demand, Temperature) %>%
+  mutate(Series = recode(Series, "Demand" = "Demand (GW)", "Temperature" = "Temperature (C)")) %>% 
+  ggplot(aes(x=index, y=Value, group=Series)) +
+  geom_line() +
+  facet_grid(Series ~ ., scales = "free_y") + 
+  xlab("Date") +
+  ylab(NULL) +
+  ggtitle("Electricity demanded and temperature") + 
+  geom_smooth()
+```
+
 ---
 
 ## Modelling with exogenous regressors
@@ -364,7 +381,7 @@ mp4_vid("resources/anim4.mp4")
 ```{r arima-fit, echo = TRUE}
 tsibbledata::elecdemand %>% 
   fable::ARIMA(
-    Demand ~ pdq(1,1,0) + PDQ(2,0,2) + WorkDay + Temperature + I(Temperature^2))
+    Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") + WorkDay + Temperature + I(Temperature^2))
 ```
 
 ]
@@ -378,7 +395,10 @@ tsibbledata::elecdemand %>%
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r arima-fc-fit, echo = TRUE, eval = FALSE, output.lines = 1:10}
-Arima(fpp2::elecdemand[,"Demand"])
+forecast::Arima(ts(fpp2::elecdemand[,"Demand"], frequency = 48), order = c(1,1,0), seasonal = c(2,0,2))
+
+auto.arima(ts(fpp2::elecdemand[,"Demand"], frequency = 48),
+           xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")], fpp2::elecdemand[,"Temperature"]^2))
 ```
 ]
 ]
