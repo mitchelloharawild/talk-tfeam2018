@@ -314,6 +314,94 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 
 ---
 
+## Modelling with exogenous regressors
+
+
+```
+#&gt; # A tsibble: 17,520 x 4 [30m]
+#&gt;    index               Demand WorkDay Temperature
+#&gt;    &lt;dttm&gt;               &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1 2014-01-01 00:00:00   3.91       0        18.2
+#&gt;  2 2014-01-01 00:30:00   3.67       0        17.9
+#&gt;  3 2014-01-01 01:00:00   3.50       0        17.6
+#&gt;  4 2014-01-01 01:30:00   3.34       0        16.8
+#&gt;  5 2014-01-01 02:00:00   3.20       0        16.3
+#&gt;  6 2014-01-01 02:30:00   3.10       0        16.6
+#&gt;  7 2014-01-01 03:00:00   3.04       0        16.6
+#&gt;  8 2014-01-01 03:30:00   3.01       0        16.7
+#&gt;  9 2014-01-01 04:00:00   3.02       0        16.2
+#&gt; 10 2014-01-01 04:30:00   3.03       0        16.6
+#&gt; # ... with 17,510 more rows
+```
+
+
+
+---
+
+# Electricity demand (Monthly)
+<video autoplay>
+        <source src="resources/anim1.mp4" type="video/mp4">
+      </video>
+
+---
+
+# Electricity demand (Daily)
+<video autoplay>
+        <source src="resources/anim2.mp4" type="video/mp4">
+      </video>
+
+---
+
+# Electricity demand (Half-hourly)
+<video autoplay>
+        <source src="resources/anim3.mp4" type="video/mp4">
+      </video>
+---
+
+# Electricity demand (Half-hourly)
+<video autoplay>
+        <source src="resources/anim4.mp4" type="video/mp4">
+      </video>
+---
+
+## Modelling with exogenous regressors
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+tsibbledata::elecdemand %&gt;% 
+  fable::ARIMA(
+    Demand ~ pdq(1,1,0) + PDQ(2,0,2) + WorkDay + Temperature + I(Temperature^2))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt;   model                 
+#&gt;   &lt;model&gt;               
+#&gt; 1 ARIMA(1,1,0)(2,0,2)[2]
+```
+
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+Arima(fpp2::elecdemand[,"Demand"])
+```
+]
+]
+
+---
+
 ## Producing forecasts
 
 .flex-row[
