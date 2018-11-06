@@ -203,14 +203,14 @@ t(y) ~ trend() + fourier(K = 6) + x
 
 ---
 
-## The modelling basics
+## Exponential smoothing
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 
 ```r
-vic_cafe %&gt;% 
+fbl_fit &lt;- vic_cafe %&gt;% 
   fable::ETS(Turnover ~ season("M"))
 ```
 
@@ -221,6 +221,7 @@ vic_cafe %&gt;%
 #&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
 #&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
 ```
+
 
 ]
 ]
@@ -234,7 +235,7 @@ vic_cafe %&gt;%
 .flex-col[
 
 ```r
-ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
   forecast::ets("ZZM")
 ```
 
@@ -253,6 +254,7 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 ...
 ```
 
+
 ]
 ]
 
@@ -265,7 +267,7 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 .flex-col[
 
 ```r
-fbl_fit &lt;- vic_cafe %&gt;% 
+vic_cafe %&gt;% 
   fable::ETS(log(Turnover) ~ season("A"))
 ```
 
@@ -289,11 +291,12 @@ fbl_fit &lt;- vic_cafe %&gt;%
 .flex-col[
 
 ```r
-fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
   forecast::ets("ZZA", lambda = 0)
 ```
 
 ```
+...
 #&gt; ETS(A,A,A) 
 #&gt; 
 #&gt; Call:
@@ -304,47 +307,10 @@ fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 #&gt;   Smoothing parameters:
 #&gt;     alpha = 0.5827 
 #&gt;     beta  = 1e-04 
-#&gt;     gamma = 1e-04 
-#&gt; 
-#&gt;   Initial states:
-#&gt;     l = 4.4311 
-#&gt;     b = 0.0059 
-#&gt;     s = 0.0133 -0.0766 0.0039 0.13 0.0189 0.0158
-#&gt;            -0.0137 -0.0065 -0.0088 -0.052 -0.0065 -0.0177
-#&gt; 
-#&gt;   sigma:  0.0371
-#&gt; 
-#&gt;       AIC      AICc       BIC 
-#&gt; -202.9930 -201.5358 -133.5952
+...
 ```
 ]
 ]
-
----
-
-## fable flexibility
-
-
-```r
-vic_cafe %&gt;% 
-  fable::ETS(log(Turnover + 1) ~ season("A"))
-```
-
---
-
-
-```r
-vic_cafe %&gt;% 
-  fable::ETS(log1p(Turnover) ~ season("A"))
-```
-
---
-
-
-```r
-vic_cafe %&gt;% 
-  fable::ETS(Turnover ~ season(c("A", "M")))
-```
 
 ---
 
@@ -362,12 +328,12 @@ fbl_fit %&gt;% forecast(h=12)
 ...
 #&gt; # A fable: 12 x 5 [1M]
 #&gt; # Key:     State, Industry [1]
-#&gt;    State    Industry                                         Month  mean .distribution        
-#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt; &lt;dist&gt;               
-#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct  967. t(N(6.9, sd = 0.037))
-#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov  976. t(N(6.9, sd = 0.043))
-#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec 1098. t(N(7, sd = 0.048))  
-#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan  974. t(N(6.9, sd = 0.053))
+#&gt;    State    Industry                                         Month Turnover .distribution   
+#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;          
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     961. N(961, sd = 36) 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     970. N(970, sd = 43) 
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec    1081. N(1081, sd = 55)
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     962. N(962, sd = 55) 
 ...
 ```
 ]
@@ -387,14 +353,14 @@ fc_fit %&gt;% forecast(h=12)
 
 ```
 ...
-#&gt;          Point Forecast     Lo 80     Hi 80    Lo 95    Hi 95
-#&gt; Oct 2018       966.7464  921.8095 1013.8740 898.8731 1039.745
-#&gt; Nov 2018       975.4419  923.1571 1030.6881 896.6233 1061.189
-#&gt; Dec 2018      1096.4623 1030.8724 1166.2254 997.7547 1204.935
-#&gt; Jan 2019       972.2181  908.6335 1040.2522 876.6749 1078.174
-#&gt; Feb 2019       902.3025  838.6874  970.7429 806.8477 1009.050
-#&gt; Mar 2019       992.9353  918.2415 1073.7050 881.0032 1119.089
-#&gt; Apr 2019       968.3218  891.2067 1052.1096 852.9025 1099.360
+#&gt;          Point Forecast     Lo 80     Hi 80    Lo 95     Hi 95
+#&gt; Oct 2018       960.6629  914.5063 1006.8196 890.0725 1031.2534
+#&gt; Nov 2018       969.7384  914.2743 1025.2025 884.9134 1054.5634
+#&gt; Dec 2018      1081.4660 1010.7131 1152.2189 973.2587 1189.6733
+#&gt; Jan 2019       961.8541  891.5970 1032.1112 854.4052 1069.3031
+#&gt; Feb 2019       886.9812  815.8195  958.1428 778.1488  995.8135
+#&gt; Mar 2019       973.8124  889.0054 1058.6194 844.1112 1103.5135
+#&gt; Apr 2019       947.9781  859.1613 1036.7948 812.1446 1083.8116
 ...
 ```
 ]
@@ -413,11 +379,11 @@ fbl_fit %&gt;% accuracy()
 ```
 
 ```
-#&gt; # A tibble: 1 x 4
+#&gt; # A tibble: 1 x 9
 #&gt; # Groups:   State [?]
-#&gt;   State    Industry                                             ME   RMSE
-#&gt;   &lt;chr&gt;    &lt;chr&gt;                                             &lt;dbl&gt;  &lt;dbl&gt;
-#&gt; 1 Victoria Cafes, restaurants and takeaway food services -0.000617 0.0365
+#&gt;   State    Industry                                      Type          ME   RMSE    MAE     MPE     MAPE   ACF1
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services Training 0.00472 0.0368 0.0289 863225. 6441129. 0.0545
 ```
 ]
 ]
@@ -435,8 +401,8 @@ fc_fit %&gt;% forecast::accuracy()
 ```
 
 ```
-#&gt;                      ME     RMSE      MAE        MPE     MAPE      MASE      ACF1
-#&gt; Training set -0.5664244 14.88602 10.57455 -0.1282861 2.886738 0.3555479 0.1468925
+#&gt;                    ME     RMSE      MAE       MPE     MAPE      MASE      ACF1
+#&gt; Training set 1.473341 14.59307 10.39603 0.3384752 2.867766 0.3495456 0.1312039
 ```
 ]
 ]

@@ -243,15 +243,19 @@ t(y) ~ trend() + fourier(K = 6) + x
 
 ---
 
-## The modelling basics
+## Exponential smoothing
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fit, echo = TRUE}
-vic_cafe %>% 
+fbl_fit <- vic_cafe %>% 
   fable::ETS(Turnover ~ season("M"))
 ```
+```{r ets-fit-print}
+fbl_fit
+```
+
 
 ]
 ]
@@ -263,10 +267,14 @@ vic_cafe %>%
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r ets-fc-fit, echo = TRUE, output.lines = 1:10}
-ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+```{r ets-fc-fit, echo = TRUE}
+fc_fit <- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
   forecast::ets("ZZM")
 ```
+```{r ets-fc-fit-print, output.lines = 1:10}
+fc_fit
+```
+
 
 ]
 ]
@@ -279,11 +287,8 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>%
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fit-log, echo = TRUE}
-fbl_fit <- vic_cafe %>% 
+vic_cafe %>% 
   fable::ETS(log(Turnover) ~ season("A"))
-```
-```{r ets-fit-log-print}
-fbl_fit
 ```
 
 ]
@@ -297,37 +302,11 @@ fbl_fit
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r ets-fc-fit-log, echo = TRUE, output.lines = 1:10}
-fc_fit <- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
   forecast::ets("ZZA", lambda = 0)
 ```
-```{r ets-fc-fit-log-print}
-fc_fit
-```
 ]
 ]
-
----
-
-## fable flexibility
-
-```{r ets-fit-logp1v1, echo = TRUE, eval = FALSE}
-vic_cafe %>% 
-  fable::ETS(log(Turnover + 1) ~ season("A"))
-```
-
---
-
-```{r ets-fit-logp1v2, echo = TRUE, eval = FALSE}
-vic_cafe %>% 
-  fable::ETS(log1p(Turnover) ~ season("A"))
-```
-
---
-
-```{r ets-fit-season, echo = TRUE, eval = FALSE}
-vic_cafe %>% 
-  fable::ETS(Turnover ~ season(c("A", "M")))
-```
 
 ---
 
