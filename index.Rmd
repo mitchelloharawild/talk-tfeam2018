@@ -14,7 +14,7 @@ output:
       ratio: '16:9'
       highlightLines: true
       countIncrementalSlides: false
-      beforeInit: "libs/slides.js"
+      beforeInit: ["libs/jquery/jquery.min.js", "libs/slides.js"]
 ---
 class: inverse
 
