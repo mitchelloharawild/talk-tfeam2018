@@ -540,6 +540,60 @@ fbl_fc %>% autoplot(vic_cafe)
 ```
 
 ---
+
+## Producing forecasts with new data
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+```{r arima-fc, echo = TRUE}
+tsbl_elec_new <- tsibbledata::elecdemand %>% 
+  filter(year(index) == 2014, month(index) == 3)
+fbl_elec_fc <- fbl_elec_fit %>% 
+  forecast(tsbl_elec_new)
+```
+```{r arima-fc-print, output.lines = 1:6}
+fbl_elec_fc
+```
+]
+]
+
+--
+
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r arima-fc-fc, echo = TRUE}
+ts_elec_new <- ts(fpp2::elecdemand[2833:4320,], frequency = 48)
+fc_elec_fc <- fc_elec_fit %>% 
+  forecast:::forecast.Arima(h=24, xreg = cbind(
+    ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
+```
+```{r arima-fc-fc-print, output.lines = 1:8}
+fc_elec_fc
+```
+]
+]
+
+---
+
+## Producing forecasts
+
+```{r arima-fc-plot, echo = TRUE}
+fbl_elec_fc %>% autoplot(tsbl_elec)
+```
+
+---
+
+## Producing forecasts
+
+```{r arima-fc-fc-plot, echo = TRUE}
+fc_elec_fc %>% autoplot()
+```
+
+---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]

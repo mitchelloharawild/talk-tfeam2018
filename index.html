@@ -658,6 +658,86 @@ fbl_fc %&gt;% autoplot(vic_cafe)
 &lt;img src="figure/ets-fc-log-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
+
+## Producing forecasts with new data
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+tsbl_elec_new &lt;- tsibbledata::elecdemand %&gt;% 
+  filter(year(index) == 2014, month(index) == 3)
+fbl_elec_fc &lt;- fbl_elec_fit %&gt;% 
+  forecast(tsbl_elec_new)
+```
+
+```
+...
+#&gt; # A fable: 1,488 x 3 [30m]
+#&gt;    index               Demand .distribution     
+#&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;            
+#&gt;  1 2014-03-01 00:00:00   4.00 N(4, sd = 0.035)  
+#&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.079)
+#&gt;  3 2014-03-01 01:00:00   3.58 N(3.6, sd = 0.13) 
+...
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts_elec_new &lt;- ts(fpp2::elecdemand[2833:4320,], frequency = 48)
+fc_elec_fc &lt;- fc_elec_fit %&gt;% 
+  forecast:::forecast.Arima(h=24, xreg = cbind(
+    ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
+```
+
+```
+...
+#&gt;          Point Forecast        Lo 80     Hi 80         Lo 95     Hi 95
+#&gt; 60.00000       3.997574   3.95213988  4.043008   3.928088512  4.067059
+#&gt; 60.02083       3.745928   3.64526905  3.846586   3.591983537  3.899872
+#&gt; 60.04167       3.578941   3.41638898  3.741492   3.330339304  3.827542
+#&gt; 60.06250       3.445818   3.21783784  3.673799   3.097152316  3.794484
+#&gt; 60.08333       3.348451   3.05340195  3.643500   2.897212440  3.799689
+#&gt; 60.10417       3.286099   2.92355700  3.648642   2.731638616  3.840560
+#&gt; 60.12500       3.270871   2.84120993  3.700533   2.613760964  3.927982
+...
+```
+]
+]
+
+---
+
+## Producing forecasts
+
+
+```r
+fbl_elec_fc %&gt;% autoplot(tsbl_elec)
+```
+
+&lt;img src="figure/arima-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Producing forecasts
+
+
+```r
+fc_elec_fc %&gt;% autoplot()
+```
+
+&lt;img src="figure/arima-fc-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
