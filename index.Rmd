@@ -381,8 +381,8 @@ tsibbledata::elecdemand %>%
 .flex-col[
 ```{r arima-fit, echo = TRUE, eval = FALSE}
 tsibbledata::elecdemand %>% 
-  fable::ARIMA(
-    Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") + WorkDay + Temperature + I(Temperature^2))
+  fable::ARIMA(Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") +
+      WorkDay + Temperature + I(Temperature^2))
 ```
 
 ]
@@ -398,7 +398,8 @@ tsibbledata::elecdemand %>%
 ```{r arima-fc-fit, echo = TRUE, eval = FALSE}
 ts(fpp2::elecdemand[,"Demand"], frequency = 48) %>% 
   forecast::Arima(order = c(1,1,0), seasonal = c(2,0,2),
-  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")], fpp2::elecdemand[,"Temperature"]^2))
+  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")],
+               fpp2::elecdemand[,"Temperature"]^2))
 ```
 ]
 ]
