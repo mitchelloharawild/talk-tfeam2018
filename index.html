@@ -399,17 +399,17 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 .flex-col[
 
 ```r
-fbl_elec_fit &lt;- tsibbledata::elecdemand %&gt;% 
-  filter(index &lt; ymd("2014-03-01")) %&gt;%
+tsbl_elec &lt;- tsibbledata::elecdemand %&gt;% filter(index &lt; ymd("2014-03-01"))
+fbl_elec_fit &lt;- tsbl_elec %&gt;%
   fable::ARIMA(Demand ~ pdq(1,1,1) + PDQ(1,0,1, period = "day") + 
                WorkDay + Temperature + I(Temperature^2))
 ```
 
 ```
 #&gt; # A mable: 1 model
-#&gt;   model                  
-#&gt;   &lt;model&gt;                
-#&gt; 1 ARIMA(1,1,1)(1,0,1)[48]
+#&gt;   model                               
+#&gt;   &lt;model&gt;                             
+#&gt; 1 LM w/ ARIMA(1,1,1)(1,0,1)[48] errors
 ```
 
 ]
@@ -424,11 +424,11 @@ fbl_elec_fit &lt;- tsibbledata::elecdemand %&gt;%
 .flex-col[
 
 ```r
-ts_elecdemand &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
-fc_elec_fit &lt;- ts_elecdemand[,"Demand"] %&gt;% 
+ts_elec &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
+fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;% 
   forecast::Arima(order = c(1,1,1), seasonal = c(1,0,1),
-                  xreg = cbind(ts_elecdemand[,c("WorkDay", "Temperature")], 
-                               ts_elecdemand[,"Temperature"]^2))
+                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")], 
+                               ts_elec[,"Temperature"]^2))
 ```
 
 ```
@@ -469,7 +469,7 @@ class: inverse
 
 ---
 
-# Extract (broom::augment)
+# Augment tsibble with model fits (broom::augment)
 
 
 ```r
@@ -496,7 +496,7 @@ augment(fbl_fit)
 
 ---
 
-# Extract (broom::tidy)
+# Tidy model parameters (broom::tidy)
 
 
 ```r
@@ -528,7 +528,7 @@ tidy(fbl_fit)
 
 ---
 
-# Extract (broom::glance)
+# Glance a one-row model summary (broom::glance)
 
 ```r
 glance(fbl_fit)
@@ -543,7 +543,7 @@ glance(fbl_fit)
 
 ---
 
-# Extract (fable::components)
+# Extract model components (fable::components)
 
 ```r
 components(fbl_fit)
@@ -569,7 +569,7 @@ components(fbl_fit)
 
 ---
 
-# Extract (fable::components)
+# Extract model components (fable::components)
 
 ```r
 components(fbl_fit) %&gt;% 
@@ -1053,7 +1053,17 @@ class: inverse
 
 .title[Extending fable]
 
-## Extending fable to support new models is easy!
+--
+
+## fable is extensible by design
+
+Extension packages can:
+
+* Define new transformations
+* Provide new accuracy measures
+* Introduce new models
+
+Which will then be usable with all other transformations, measures and models!
 
 ---
 class: inverse, top
@@ -1091,8 +1101,7 @@ More information:
 
 
 ```r
-fasster_fit &lt;- tsibbledata::elecdemand %&gt;%
-  filter(index &lt; ymd("2014-03-01")) %&gt;%
+fasster_fit &lt;- tsbl_elec %&gt;%
   fasster(log(Demand) ~ WorkDay %S% (trig(48, 16) + poly(1)) + Temperature + I(Temperature^2))
 ```
 
@@ -1107,7 +1116,7 @@ fasster_fit &lt;- tsibbledata::elecdemand %&gt;%
 
 ```r
 fasster_fc &lt;- fasster_fit %&gt;% 
-  forecast(tsibbledata::elecdemand %&gt;% filter(year(index) == 2014, month(index) == 3))
+  forecast(tsbl_elec_new)
 ```
 
 
@@ -1134,22 +1143,19 @@ fasster_fc &lt;- fasster_fit %&gt;%
 
 ```r
 fasster_fc %&gt;% 
-  autoplot(tsibbledata::elecdemand %&gt;% filter(index &lt; ymd("2014-03-01")))
+  autoplot(tsbl_elec_new)
 ```
 
 &lt;img src="figure/fasster-elecfc-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
-
 ---
-
-class: inverse, top
+class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-# Additional features
+.title[What's next?]
 
-## simulate()
-## interpolate()
+# A peek into the future of fable!
 
 ---
 
@@ -1192,7 +1198,6 @@ vic_cafe %&gt;%
 ```
 
 &lt;img src="figure/vic-cafe-sim-plot-1.svg" style="display: block; margin: auto;" /&gt;
-
 
 ---
 
