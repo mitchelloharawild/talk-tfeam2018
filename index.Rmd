@@ -283,7 +283,7 @@ and many more...
 Using a formula is a concise method of model specification, and is used in most modelling functions in R. Use of a formula is rare in time series modelling, leading to complicated documentation and verbose interfaces.
 
 ```{r, echo = TRUE, eval = FALSE}
-t(y) ~ trend() + fourier(K = 6) + x
+transformation(y) ~ trend() + season(period = "day") + x
 ```
 
 --
