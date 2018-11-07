@@ -514,14 +514,11 @@ fc_fit %>% forecast::accuracy()
 ]
 
 ---
-class: inverse, top
+class: inverse
 
-## Recap of the workflow
+.sticker-float[![fable](resources/fable.svg)]
 
-
----
-
-## Thinking with tables
+# Forecasting with tables
 
 ```{r recap-simple-fit, echo = TRUE}
 fbl_fit
@@ -533,10 +530,9 @@ fbl_fit
 tsibbledata::ausretail
 ```
 
-
 ---
 
-## Estimate models
+# Estimate
 
 ```{r batch-ets, echo = TRUE}
 all_ets <- tsibbledata::ausretail %>% 
@@ -546,10 +542,39 @@ all_ets <- tsibbledata::ausretail %>%
 all_ets
 ```
 
+---
+
+# Extract (broom::augment)
+
+```{r batch-augment, echo = TRUE}
+augment(all_ets)
+```
 
 ---
 
-## Produce forecasts
+# Extract (broom::tidy)
+
+```{r batch-tidy, echo = TRUE}
+tidy(all_ets)
+```
+
+---
+
+# Extract (broom::glance)
+```{r batch-glance, echo = TRUE}
+glance(all_ets)
+```
+
+---
+
+# Extract (fable::components)
+```{r batch-components, echo = TRUE}
+components(all_ets)
+```
+
+---
+
+# Forecast
 
 ```{r batch-fc, echo = TRUE}
 all_fc <- all_ets %>% 
@@ -561,9 +586,9 @@ all_fc
 
 ---
 
-## Evaluate accuracy
+## Evaluate
 
-```{r}
+```{r batch-accuracy, echo = TRUE}
 all_ets %>% accuracy()
 ```
 
