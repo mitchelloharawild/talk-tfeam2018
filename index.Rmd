@@ -264,9 +264,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-<br>
+.title[Model]
 
-# Estimating models
+## Model specification and estimation
 
 `ETS()`
 
@@ -427,9 +427,9 @@ class: inverse
 .sticker-float[![broom](resources/broom.png)]
 .sticker-float[![fable](resources/fable.svg)]
 
-<br>
+.title[Extract]
 
-# Extracting model information
+## Extract model information using tidy functions
 
 `augment()`
 
@@ -444,9 +444,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-<br>
+.title[Forecast]
 
-# Producing forecasts
+## Forecast future values
 
 `forecast()`
 
@@ -481,9 +481,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-<br>
+.title[Accuracy]
 
-# Evaluating accuracy
+## Accuracy evaluation to compare models
 
 `accuracy()`
 

@@ -231,9 +231,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-&lt;br&gt;
+.title[Model]
 
-# Estimating models
+## Model specification and estimation
 
 `ETS()`
 
@@ -430,9 +430,9 @@ class: inverse
 .sticker-float[![broom](resources/broom.png)]
 .sticker-float[![fable](resources/fable.svg)]
 
-&lt;br&gt;
+.title[Extract]
 
-# Extracting model information
+## Extract model information using tidy functions
 
 `augment()`
 
@@ -447,9 +447,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-&lt;br&gt;
+.title[Forecast]
 
-# Producing forecasts
+## Forecast future values
 
 `forecast()`
 
@@ -512,9 +512,9 @@ class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
-&lt;br&gt;
+.title[Accuracy]
 
-# Evaluating accuracy
+## Accuracy evaluation to compare models
 
 `accuracy()`
 
@@ -560,14 +560,11 @@ fc_fit %&gt;% forecast::accuracy()
 ]
 
 ---
-class: inverse, top
+class: inverse
 
-## Recap of the workflow
+.sticker-float[![fable](resources/fable.svg)]
 
-
----
-
-## Thinking with tables
+# Forecasting with tables
 
 
 ```r
@@ -607,10 +604,9 @@ tsibbledata::ausretail
 #&gt; # ... with 64,078 more rows
 ```
 
-
 ---
 
-## Estimate models
+# Estimate
 
 
 ```r
@@ -636,10 +632,87 @@ all_ets &lt;- tsibbledata::ausretail %&gt;%
 #&gt; # ... with 142 more rows
 ```
 
+---
+
+# Extract (broom::augment)
+
+
+```r
+augment(all_ets)
+```
+
+```
+#&gt; # A tsibble: 64,088 x 8 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State            Industry                    Month State1           Industry1               Turnover .fitted   .resid
+#&gt;    &lt;chr&gt;            &lt;chr&gt;                       &lt;mth&gt; &lt;chr&gt;            &lt;chr&gt;                      &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 Australian Capi… Cafes, restaurants and…  1982 Apr Australian Capi… Cafes, restaurants and…      4.4    3.92  0.124  
+#&gt;  2 Australian Capi… Cafes, restaurants and…  1982 May Australian Capi… Cafes, restaurants and…      3.4    3.92 -0.132  
+#&gt;  3 Australian Capi… Cafes, restaurants and…  1982 Jun Australian Capi… Cafes, restaurants and…      3.6    3.63 -0.00866
+#&gt;  4 Australian Capi… Cafes, restaurants and…  1982 Jul Australian Capi… Cafes, restaurants and…      4      4.32 -0.0747 
+#&gt;  5 Australian Capi… Cafes, restaurants and…  1982 Aug Australian Capi… Cafes, restaurants and…      3.6    4.15 -0.133  
+#&gt;  6 Australian Capi… Cafes, restaurants and…  1982 Sep Australian Capi… Cafes, restaurants and…      4.2    4.63 -0.0927 
+#&gt;  7 Australian Capi… Cafes, restaurants and…  1982 Oct Australian Capi… Cafes, restaurants and…      4.8    4.96 -0.0331 
+#&gt;  8 Australian Capi… Cafes, restaurants and…  1982 Nov Australian Capi… Cafes, restaurants and…      5.4    5.12  0.0549 
+#&gt;  9 Australian Capi… Cafes, restaurants and…  1982 Dec Australian Capi… Cafes, restaurants and…      6.9    6.88  0.00276
+#&gt; 10 Australian Capi… Cafes, restaurants and…  1983 Jan Australian Capi… Cafes, restaurants and…      3.8    4.25 -0.105  
+#&gt; # ... with 64,078 more rows
+```
 
 ---
 
-## Produce forecasts
+# Extract (broom::tidy)
+
+
+```r
+tidy(all_ets)
+```
+
+```
+#&gt; # A tibble: 2,433 x 4
+#&gt;    State                        Industry                                 term   estimate
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services alpha  0.520   
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services beta   0.000100
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services gamma  0.0800  
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services l      4.08    
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services b      0.130   
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services s0    -0.291   
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services s1    -0.852   
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services s2    -0.488   
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services s3     2.29    
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services s4     0.799   
+#&gt; # ... with 2,423 more rows
+```
+
+---
+
+# Extract (broom::glance)
+
+```r
+glance(all_ets)
+```
+
+```
+#&gt; # A tibble: 152 x 11
+#&gt;    State              Industry                               method   period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering servi… ETS(M,A…     12 0.0955 -1527. 3088. 3090. 3158. 2.99  4.08 
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food … ETS(M,A…     12 0.0663 -1586. 3205. 3207. 3275. 3.77  5.81 
+#&gt;  3 Australian Capita… Clothing retailing                     ETS(M,A…     12 0.0767 -1228. 2489. 2491. 2558. 0.792 1.07 
+#&gt;  4 Australian Capita… Clothing, footwear and personal acces… ETS(M,A…     12 0.0623 -1350. 2735. 2736. 2804. 1.52  1.89 
+#&gt;  5 Australian Capita… Department stores                      ETS(M,A…     12 0.0619 -1481. 2997. 2998. 3066. 2.01  2.02 
+#&gt;  6 Australian Capita… Electrical and electronic goods retai… ETS(M,A…     12 0.0903 -1477. 2988. 2990. 3058. 2.45  3.56 
+#&gt;  7 Australian Capita… Food retailing                         ETS(M,A…     12 0.0330 -1725. 3483. 3485. 3553. 6.05  7.35 
+#&gt;  8 Australian Capita… Footwear and other personal accessory… ETS(M,A…     12 0.0666  -958. 1950. 1952. 2020. 0.341 0.420
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware… ETS(M,A…     12 0.0889 -1385. 2804. 2805. 2873. 2.30  3.10 
+#&gt; 10 Australian Capita… Hardware, building and garden supplie… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
+#&gt; # ... with 142 more rows
+```
+
+---
+
+# Forecast
 
 
 ```r
@@ -667,8 +740,12 @@ all_fc &lt;- all_ets %&gt;%
 
 ---
 
-## Evaluate accuracy
+## Evaluate
 
+
+```r
+all_ets %&gt;% accuracy()
+```
 
 ```
 #&gt; # A tibble: 152 x 10
