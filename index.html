@@ -576,7 +576,7 @@ class: inverse
 .flex-col[
 
 ```r
-fbl_fit %&gt;% forecast(h=12)
+fbl_fc &lt;- fbl_fit %&gt;% forecast(h=24)
 ```
 
 ```
@@ -603,7 +603,7 @@ fbl_fit %&gt;% forecast(h=12)
 .flex-col[
 
 ```r
-fc_fit %&gt;% forecast(h=12)
+fc_fc &lt;- fc_fit %&gt;% forecast(h=24)
 ```
 
 ```
@@ -627,7 +627,7 @@ fc_fit %&gt;% forecast(h=12)
 
 
 ```r
-fbl_fit %&gt;% forecast(h=24) %&gt;% autoplot(vic_cafe)
+fbl_fc %&gt;% autoplot(vic_cafe)
 ```
 
 &lt;img src="figure/ets-fc-log-plot-1.svg" style="display: block; margin: auto;" /&gt;

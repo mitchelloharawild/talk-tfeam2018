@@ -498,8 +498,11 @@ class: inverse
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r ets-fc-log, echo = TRUE, output.lines = 1:8}
-fbl_fit %>% forecast(h=12)
+```{r ets-fc-log, echo = TRUE}
+fbl_fc <- fbl_fit %>% forecast(h=24)
+```
+```{r ets-fc-log-print, output.lines = 1:8}
+fbl_fc
 ```
 ]
 ]
@@ -511,8 +514,11 @@ fbl_fit %>% forecast(h=12)
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r ets-fc-fc-log, echo = TRUE, output.lines = 1:8}
-fc_fit %>% forecast(h=12)
+```{r ets-fc-fc-log, echo = TRUE}
+fc_fc <- fc_fit %>% forecast(h=24)
+```
+```{r ets-fc-fc-log-print, output.lines = 1:8}
+fc_fc
 ```
 ]
 ]
@@ -522,7 +528,7 @@ fc_fit %>% forecast(h=12)
 ## Producing forecasts
 
 ```{r ets-fc-log-plot, echo = TRUE}
-fbl_fit %>% forecast(h=24) %>% autoplot(vic_cafe)
+fbl_fc %>% autoplot(vic_cafe)
 ```
 
 ---
