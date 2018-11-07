@@ -157,6 +157,13 @@ p, li {
   margin-bottom:20px;
 }
 
+.plot-right-absolute{
+  position: absolute;
+  width: 55%;
+  right: 10px;
+  top: 10%;
+}
+
 .table{
 	width: 100%;
 	text-align: center;

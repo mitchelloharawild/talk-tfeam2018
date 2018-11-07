@@ -1203,6 +1203,7 @@ vic_cafe %&gt;%
 
 ## Interpolating missing values (`interpolate()`)
 
+.float-left[
 
 ```r
 tsibbledata::olympic_running
@@ -1225,6 +1226,11 @@ tsibbledata::olympic_running
 #&gt; 10  1932 100m   men    10.3
 #&gt; # ... with 302 more rows
 ```
+]
+
+.plot-right-absolute[
+&lt;img src="figure/olympic-running-miss-1.svg" style="display: block; margin: auto;" /&gt;
+]
 
 .footnote[Source: The International Olympic Committee ([www.olympic.org](www.olympic.org))]
 
@@ -1232,20 +1238,36 @@ tsibbledata::olympic_running
 
 ## Interpolating missing values (`interpolate()`)
 
-&lt;img src="figure/olympic-running-miss-1.svg" style="display: block; margin: auto;" /&gt;
-
----
-
-## Interpolating missing values (`interpolate()`)
-
+.float-left[
 
 ```r
-olympic_complete &lt;- tsibbledata::olympic_running %&gt;% 
+olympic_complete &lt;- olympic_running %&gt;% 
   TSLM(Time ~ trend()) %&gt;% 
-  interpolate(tsibbledata::olympic_running)
+  interpolate(olympic_running)
 ```
 
+```
+#&gt; # A tsibble: 312 x 4 [4Y]
+#&gt; # Key:       Length, Sex [14]
+#&gt;    Length Sex    Year  Time
+#&gt;    &lt;fct&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 100m   men    1896  12  
+#&gt;  2 100m   men    1900  11  
+#&gt;  3 100m   men    1904  11  
+#&gt;  4 100m   men    1908  10.8
+#&gt;  5 100m   men    1912  10.8
+#&gt;  6 100m   men    1916  10.8
+#&gt;  7 100m   men    1920  10.8
+#&gt;  8 100m   men    1924  10.6
+#&gt;  9 100m   men    1928  10.8
+#&gt; 10 100m   men    1932  10.3
+#&gt; # ... with 302 more rows
+```
+]
+
+.plot-right-absolute[
 &lt;img src="figure/olympic-running-completed-1.svg" style="display: block; margin: auto;" /&gt;
+]
 
 ---
 
