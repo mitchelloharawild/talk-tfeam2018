@@ -697,6 +697,88 @@ class: inverse
 ## Extending fable to support new models is easy!
 
 ---
+class: inverse, top
+
+.sticker-float[![fasster](resources/fasster.png)]
+
+.title[fasster]
+
+* A model for switching temporal patterns
+* Supports exogenous regressors and handles missing values
+* Flexible model specification
+
+<br>
+
+More information:
+
+* `r fa("github", fill = "white")` [tidyverts/fasster](https://github.com/tidyverts/fasster)
+* `r fa("desktop", fill = "white")` [useR!2018](https://mitchelloharawild.com/user2018/)
+
+---
+
+## Switching seasonality
+
+```{r fasster-noswitching, fig.height = 5.3}
+tsibbledata::elecdemand %>% 
+  filter(month(index) == 6) %>%
+  ggplot(aes(x=index, y = Demand)) +
+  geom_line() + 
+  xlab("Time") + 
+  ylab("Electricity Demanded (GW)")
+```
+
+---
+
+## Switching seasonality
+
+```{r fasster-switching, fig.height = 6}
+tsibbledata::elecdemand %>% 
+  filter(month(index) == 6) %>%
+  mutate(
+    `Working Day` = ifelse(WorkDay == 1, Demand, NA),
+    `Non-working Day` = ifelse(WorkDay == 0, Demand, NA)
+  ) %>%
+  gather("Day Type", "Demand", `Working Day`, `Non-working Day`) %>%
+  ggplot(aes(x=index, y = Demand, colour = `Day Type`)) +
+  geom_line() + 
+  xlab("Time") + 
+  ylab("Electricity Demanded (GW)") + 
+  scale_colour_brewer(palette = "Dark2")
+```
+
+---
+
+# Forecasting with fasster
+
+```{r, fasster-elecfit, echo = TRUE}
+fasster_fit <- tsibbledata::elecdemand %>%
+  filter(index < ymd("2014-03-01")) %>%
+  fasster(log(Demand) ~ WorkDay %S% (trig(48, 16) + poly(1)) + Temperature + I(Temperature^2))
+```
+
+```{r fasster-elecfit-print}
+fasster_fit
+```
+
+```{r fasster-elecfc, echo = TRUE}
+fasster_fc <- fasster_fit %>% 
+  forecast(tsibbledata::elecdemand %>% filter(year(index) == 2014, month(index) == 3))
+```
+
+```{r fasster-elecfc-print}
+fasster_fc
+```
+
+---
+
+# Forecasting with fasster
+```{r fasster-elecfc-plot, echo = TRUE}
+fasster_fc %>% 
+  autoplot(tsibbledata::elecdemand %>% filter(index < ymd("2014-03-01")))
+```
+
+
+---
 
 class: inverse, top
 
@@ -779,24 +861,6 @@ tsibbledata::olympic_running %>%
   theme(legend.position = "bottom", legend.title = element_blank()) +
   ylab("Running time (seconds)")
 ```
-
----
-class: inverse, top
-
-.sticker-float[![fasster](resources/fasster.png)]
-
-.title[fasster]
-
-* A model for switching temporal patterns
-* Supports exogenous regressors and handles missing values
-* Flexible model specification
-
-<br>
-
-More information:
-
-* `r fa("github", fill = "white")` [tidyverts/fasster](https://github.com/tidyverts/fasster)
-* `r fa("desktop", fill = "white")` [useR!2018](https://mitchelloharawild.com/user2018/)
 
 ---
 
