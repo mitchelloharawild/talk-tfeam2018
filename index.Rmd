@@ -358,7 +358,7 @@ mp4_vid("resources/anim4.mp4")
 
 ## Using exogenous information
 
-```{r fig.height=5}
+```{r elecdemand-xreg, fig.height=5}
 tsibbledata::elecdemand %>%
   gather("Series", "Value", Demand, Temperature) %>%
   mutate(Series = recode(Series, "Demand" = "Demand (GW)", "Temperature" = "Temperature (C)")) %>% 
@@ -378,7 +378,7 @@ tsibbledata::elecdemand %>%
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r arima-fit, echo = TRUE}
+```{r arima-fit, echo = TRUE, eval = FALSE}
 tsibbledata::elecdemand %>% 
   fable::ARIMA(
     Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") + WorkDay + Temperature + I(Temperature^2))
@@ -394,11 +394,10 @@ tsibbledata::elecdemand %>%
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r arima-fc-fit, echo = TRUE, eval = FALSE, output.lines = 1:10}
-forecast::Arima(ts(fpp2::elecdemand[,"Demand"], frequency = 48), order = c(1,1,0), seasonal = c(2,0,2))
-
-auto.arima(ts(fpp2::elecdemand[,"Demand"], frequency = 48),
-           xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")], fpp2::elecdemand[,"Temperature"]^2))
+```{r arima-fc-fit, echo = TRUE, eval = FALSE}
+ts(fpp2::elecdemand[,"Demand"], frequency = 48) %>% 
+  forecast::Arima(order = c(1,1,0), seasonal = c(2,0,2),
+  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")], fpp2::elecdemand[,"Temperature"]^2))
 ```
 ]
 ]
@@ -456,8 +455,60 @@ fc_fit %>% forecast::accuracy()
 ]
 
 ---
+class: inverse, top
+
+## Recap of the workflow
 
 
+---
+
+## Thinking with tables
+
+```{r recap-simple-fit, echo = TRUE}
+fbl_fit
+```
+
+--
+
+```{r recap-ausretail, echo = TRUE}
+tsibbledata::ausretail
+```
+
+
+---
+
+## Estimate models
+
+```{r batch-ets, echo = TRUE}
+all_ets <- tsibbledata::ausretail %>% 
+  ETS(Turnover)
+```
+```{r batch-ets-print}
+all_ets
+```
+
+
+---
+
+## Produce forecasts
+
+```{r batch-fc, echo = TRUE}
+all_fc <- all_ets %>% 
+  forecast(h=12)
+```
+```{r batch-fc-print}
+all_fc
+```
+
+---
+
+## Evaluate accuracy
+
+```{r}
+all_ets %>% accuracy()
+```
+
+---
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]

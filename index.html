@@ -116,8 +116,8 @@ tsibbledata::ausretail
 ```
 
 ```
-#&gt; # A tsibble: 78,840 x 5 [1M]
-#&gt; # Key:       State, Industry [180]
+#&gt; # A tsibble: 64,088 x 5 [1M]
+#&gt; # Key:       State, Industry [152]
 #&gt;    State                        Industry                                 `Series ID`    Month Turnover
 #&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;          &lt;mth&gt;    &lt;dbl&gt;
 #&gt;  1 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Apr      4.4
@@ -130,7 +130,7 @@ tsibbledata::ausretail
 #&gt;  8 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Nov      5.4
 #&gt;  9 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Dec      6.9
 #&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
-#&gt; # ... with 78,830 more rows
+#&gt; # ... with 64,078 more rows
 ```
 
 &lt;!-- Features: --&gt;
@@ -203,7 +203,7 @@ t(y) ~ trend() + fourier(K = 6) + x
 
 ---
 
-## Exponential smoothing
+## A simple example
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
@@ -314,8 +314,12 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 
 ---
 
-## Modelling with exogenous regressors
+## A more realistic example
 
+
+```r
+tsibbledata::elecdemand
+```
 
 ```
 #&gt; # A tsibble: 17,520 x 4 [30m]
@@ -334,34 +338,40 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 #&gt; # ... with 17,510 more rows
 ```
 
-
+.footnote[Source: Australian Energy Market Operator, and the Australian Bureau of Meteorology]
 
 ---
 
-# Electricity demand (Monthly)
+## Electricity demand (Monthly)
 <video autoplay>
         <source src="resources/anim1.mp4" type="video/mp4">
       </video>
 
 ---
 
-# Electricity demand (Daily)
+## Electricity demand (Daily)
 <video autoplay>
         <source src="resources/anim2.mp4" type="video/mp4">
       </video>
 
 ---
 
-# Electricity demand (Half-hourly)
+## Electricity demand (Half-hourly)
 <video autoplay>
         <source src="resources/anim3.mp4" type="video/mp4">
       </video>
 ---
 
-# Electricity demand (Half-hourly)
+## Electricity demand (Half-hourly)
 <video autoplay>
         <source src="resources/anim4.mp4" type="video/mp4">
       </video>
+---
+
+## Using exogenous information
+
+&lt;img src="figure/elecdemand-xreg-1.svg" style="display: block; margin: auto;" /&gt;
+
 ---
 
 ## Modelling with exogenous regressors
@@ -373,14 +383,7 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 ```r
 tsibbledata::elecdemand %&gt;% 
   fable::ARIMA(
-    Demand ~ pdq(1,1,0) + PDQ(2,0,2) + WorkDay + Temperature + I(Temperature^2))
-```
-
-```
-#&gt; # A mable: 1 model
-#&gt;   model                 
-#&gt;   &lt;model&gt;               
-#&gt; 1 ARIMA(1,1,0)(2,0,2)[2]
+    Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") + WorkDay + Temperature + I(Temperature^2))
 ```
 
 ]
@@ -395,7 +398,9 @@ tsibbledata::elecdemand %&gt;%
 .flex-col[
 
 ```r
-Arima(fpp2::elecdemand[,"Demand"])
+ts(fpp2::elecdemand[,"Demand"], frequency = 48) %&gt;% 
+  forecast::Arima(order = c(1,1,0), seasonal = c(2,0,2),
+  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")], fpp2::elecdemand[,"Temperature"]^2))
 ```
 ]
 ]
@@ -467,11 +472,11 @@ fbl_fit %&gt;% accuracy()
 ```
 
 ```
-#&gt; # A tibble: 1 x 9
+#&gt; # A tibble: 1 x 10
 #&gt; # Groups:   State [?]
-#&gt;   State    Industry                                      Type          ME   RMSE    MAE     MPE     MAPE   ACF1
-#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
-#&gt; 1 Victoria Cafes, restaurants and takeaway food services Training 0.00472 0.0368 0.0289 863225. 6441129. 0.0545
+#&gt;   State    Industry                                      Type        ME  RMSE   MAE   MPE  MAPE  ACF1  MASE
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services Training  1.47  14.6  10.4 0.338  2.87 0.131 0.350
 ```
 ]
 ]
@@ -496,8 +501,135 @@ fc_fit %&gt;% forecast::accuracy()
 ]
 
 ---
+class: inverse, top
+
+## Recap of the workflow
 
 
+---
+
+## Thinking with tables
+
+
+```r
+fbl_fit
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model      
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
+```
+
+--
+
+
+```r
+tsibbledata::ausretail
+```
+
+```
+#&gt; # A tsibble: 64,088 x 5 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State                        Industry                                 `Series ID`    Month Turnover
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;          &lt;mth&gt;    &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Apr      4.4
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 May      3.4
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jun      3.6
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jul      4  
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Aug      3.6
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Sep      4.2
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Oct      4.8
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Nov      5.4
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Dec      6.9
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
+#&gt; # ... with 64,078 more rows
+```
+
+
+---
+
+## Estimate models
+
+
+```r
+all_ets &lt;- tsibbledata::ausretail %&gt;% 
+  ETS(Turnover)
+```
+
+```
+#&gt; # A mable: 152 models
+#&gt; # Key:     State, Industry [152]
+#&gt;    State                        Industry                                                          model     
+#&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                                             &lt;model&gt;   
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services                          ETS(M,A,A)
+#&gt;  2 Australian Capital Territory Cafes, restaurants and takeaway food services                     ETS(M,A,M)
+#&gt;  3 Australian Capital Territory Clothing retailing                                                ETS(M,A,M)
+#&gt;  4 Australian Capital Territory Clothing, footwear and personal accessory retailing               ETS(M,A,M)
+#&gt;  5 Australian Capital Territory Department stores                                                 ETS(M,A,M)
+#&gt;  6 Australian Capital Territory Electrical and electronic goods retailing                         ETS(M,A,M)
+#&gt;  7 Australian Capital Territory Food retailing                                                    ETS(M,A,M)
+#&gt;  8 Australian Capital Territory Footwear and other personal accessory retailing                   ETS(M,A,M)
+#&gt;  9 Australian Capital Territory Furniture, floor coverings, houseware and textile goods retailing ETS(M,A,M)
+#&gt; 10 Australian Capital Territory Hardware, building and garden supplies retailing                  ETS(M,A,M)
+#&gt; # ... with 142 more rows
+```
+
+
+---
+
+## Produce forecasts
+
+
+```r
+all_fc &lt;- all_ets %&gt;% 
+  forecast(h=12)
+```
+
+```
+#&gt; # A fable: 1,824 x 5 [1M]
+#&gt; # Key:     State, Industry [152]
+#&gt;    State                        Industry                                    Month Turnover .distribution  
+#&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                       &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;         
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services 2018 Oct     42.0 N(42, sd = 4)  
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services 2018 Nov     42.0 N(42, sd = 4.5)
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services 2018 Dec     43.5 N(44, sd = 5.1)
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services 2019 Jan     38.5 N(38, sd = 5.2)
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services 2019 Feb     41.8 N(42, sd = 5.8)
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services 2019 Mar     45.1 N(45, sd = 6.3)
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services 2019 Apr     42.0 N(42, sd = 6.5)
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services 2019 May     43.1 N(43, sd = 6.9)
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services 2019 Jun     42.3 N(42, sd = 7.2)
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services 2019 Jul     43.2 N(43, sd = 7.6)
+#&gt; # ... with 1,814 more rows
+```
+
+---
+
+## Evaluate accuracy
+
+
+```
+#&gt; # A tibble: 152 x 10
+#&gt; # Groups:   State [?]
+#&gt;    State              Industry                                 Type          ME  RMSE   MAE     MPE  MAPE     ACF1  MASE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering services Traini… -0.0789  1.73  1.25  -1.39    7.05  1.09e-1 0.425
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food se… Traini… -0.0728  1.94  1.40  -0.721   4.93  4.41e-2 0.403
+#&gt;  3 Australian Capita… Clothing retailing                       Traini…  0.00299 0.890 0.645 -0.533   5.81  1.51e-1 0.519
+#&gt;  4 Australian Capita… Clothing, footwear and personal accesso… Traini…  0.0422  1.23  0.861 -0.347   4.65  2.51e-1 0.567
+#&gt;  5 Australian Capita… Department stores                        Traini… -0.146   1.42  1.05  -0.805   4.53 -1.18e-1 0.751
+#&gt;  6 Australian Capita… Electrical and electronic goods retaili… Traini…  0.00335 1.56  1.09  -0.933   6.57  3.58e-2 0.497
+#&gt;  7 Australian Capita… Food retailing                           Traini…  0.112   2.46  1.82   0.0573  2.36  2.83e-2 0.314
+#&gt;  8 Australian Capita… Footwear and other personal accessory r… Traini…  0.0219  0.584 0.375 -0.403   4.98  2.23e-1 0.587
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware a… Traini… -0.0379  1.52  0.964 -0.953   6.35  6.48e-2 0.435
+#&gt; 10 Australian Capita… Hardware, building and garden supplies … Traini…  0.00548 1.11  0.751 -0.759   6.95  9.89e-4 0.572
+#&gt; # ... with 142 more rows
+```
+
+---
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]
