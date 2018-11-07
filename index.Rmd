@@ -268,11 +268,11 @@ class: inverse
 
 ## Model specification and estimation
 
-`ETS()`
+`ETS(tsibble, formula, ...)`
 
-`ARIMA()`
+`ARIMA(tsibble, formula, ...)`
 
-`LM()`
+`LM(tsibble, formula, ...)`
 
 and many more...
 
@@ -431,13 +431,13 @@ class: inverse
 
 ## Extract model information using tidy functions
 
-`augment()`
+`augment(mable, ...)`
 
-`tidy()`
+`tidy(mable, ...)`
 
-`glance()`
+`glance(mable, ...)`
 
-`components()`
+`components(mable, ...)`
 
 ---
 
@@ -489,7 +489,7 @@ class: inverse
 
 ## Forecast future values
 
-`forecast()`
+`forecast(mable, new_data, h, ...)`
 
 ---
 
@@ -540,7 +540,9 @@ class: inverse
 
 ## Accuracy evaluation to compare models
 
-`accuracy()`
+`accuracy(mable, measures, ...)`
+
+`accuracy(fable, new_data, measures, ...)`
 
 ---
 
