@@ -440,6 +440,47 @@ class: inverse
 `components()`
 
 ---
+
+# Extract (broom::augment)
+
+```{r ets-augment, echo = TRUE}
+augment(fbl_fit)
+```
+
+---
+
+# Extract (broom::tidy)
+
+```{r ets-tidy, echo = TRUE}
+tidy(fbl_fit)
+```
+
+---
+
+# Extract (broom::glance)
+```{r ets-glance, echo = TRUE}
+glance(fbl_fit)
+```
+
+---
+
+# Extract (fable::components)
+```{r ets-components, echo = TRUE}
+components(fbl_fit)
+```
+
+---
+
+# Extract (fable::components)
+```{r ets-components-plot, echo = TRUE}
+components(fbl_fit) %>% 
+  gather(component, value, level, slope, season) %>% 
+  ggplot(aes(x = Month, y = value)) + 
+  geom_line() + 
+  facet_grid(vars(component), scales = "free_y")
+```
+
+---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -571,6 +612,18 @@ glance(all_ets)
 ```{r batch-components, echo = TRUE}
 components(all_ets)
 ```
+
+---
+
+# Extract (fable::components)
+
+```{r batch-components-plot, echo = TRUE}
+components(all_ets) %>% 
+  filter(Industry == "Cafes, restaurants and takeaway food services") %>% 
+  ggplot(aes(x = Month, y = level, colour = State)) + 
+  geom_line()
+```
+
 
 ---
 

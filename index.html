@@ -443,6 +443,120 @@ class: inverse
 `components()`
 
 ---
+
+# Extract (broom::augment)
+
+
+```r
+augment(fbl_fit)
+```
+
+```
+#&gt; # A tsibble: 438 x 8 [1M]
+#&gt; # Key:       State, Industry [1]
+#&gt;    State   Industry                             Month State1  Industry1                        Turnover .fitted   .resid
+#&gt;    &lt;chr&gt;   &lt;chr&gt;                                &lt;mth&gt; &lt;chr&gt;   &lt;chr&gt;                               &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 Victor… Cafes, restaurants and takeaway…  1982 Apr Victor… Cafes, restaurants and takeaway…     85.1    84.4  0.00808
+#&gt;  2 Victor… Cafes, restaurants and takeaway…  1982 May Victor… Cafes, restaurants and takeaway…     85.1    85.3 -0.00246
+#&gt;  3 Victor… Cafes, restaurants and takeaway…  1982 Jun Victor… Cafes, restaurants and takeaway…     82.8    81.8  0.0121 
+#&gt;  4 Victor… Cafes, restaurants and takeaway…  1982 Jul Victor… Cafes, restaurants and takeaway…     82.1    86.5 -0.0503 
+#&gt;  5 Victor… Cafes, restaurants and takeaway…  1982 Aug Victor… Cafes, restaurants and takeaway…     81.8    85.0 -0.0372 
+#&gt;  6 Victor… Cafes, restaurants and takeaway…  1982 Sep Victor… Cafes, restaurants and takeaway…     84.6    82.3  0.0279 
+#&gt;  7 Victor… Cafes, restaurants and takeaway…  1982 Oct Victor… Cafes, restaurants and takeaway…     91.7    86.3  0.0620 
+#&gt;  8 Victor… Cafes, restaurants and takeaway…  1982 Nov Victor… Cafes, restaurants and takeaway…     97.7    90.7  0.0776 
+#&gt;  9 Victor… Cafes, restaurants and takeaway…  1982 Dec Victor… Cafes, restaurants and takeaway…    109.    106.   0.0284 
+#&gt; 10 Victor… Cafes, restaurants and takeaway…  1983 Jan Victor… Cafes, restaurants and takeaway…     94.6    96.5 -0.0192 
+#&gt; # ... with 428 more rows
+```
+
+---
+
+# Extract (broom::tidy)
+
+
+```r
+tidy(fbl_fit)
+```
+
+```
+#&gt; # A tibble: 17 x 4
+#&gt;    State    Industry                                      term   estimate
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services alpha  0.630   
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services beta   0.0172  
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services gamma  0.000100
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services phi    0.980   
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services l     85.3     
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services b      0.363   
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services s0     1.01    
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services s1     0.926   
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services s2     1.01    
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services s3     1.14    
+#&gt; 11 Victoria Cafes, restaurants and takeaway food services s4     1.02    
+#&gt; 12 Victoria Cafes, restaurants and takeaway food services s5     1.01    
+#&gt; 13 Victoria Cafes, restaurants and takeaway food services s6     0.986   
+#&gt; 14 Victoria Cafes, restaurants and takeaway food services s7     0.997   
+#&gt; 15 Victoria Cafes, restaurants and takeaway food services s8     0.985   
+#&gt; 16 Victoria Cafes, restaurants and takeaway food services s9     0.943   
+#&gt; 17 Victoria Cafes, restaurants and takeaway food services s10    0.986
+```
+
+---
+
+# Extract (broom::glance)
+
+```r
+glance(fbl_fit)
+```
+
+```
+#&gt; # A tibble: 1 x 11
+#&gt;   State    Industry                                      method      period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)     12 0.0375 -2406. 4848. 4850. 4922.  213.  339.
+```
+
+---
+
+# Extract (fable::components)
+
+```r
+components(fbl_fit)
+```
+
+```
+#&gt; # A tsibble: 439 x 6 [1M]
+#&gt; # Key:       State, Industry [1]
+#&gt;    State    Industry                                         Month level slope season
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  85.3 0.363  1.01 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  86.1 0.368  0.985
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  86.4 0.357  0.986
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  87.4 0.368  0.943
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  85.0 0.284  0.985
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  83.2 0.224  0.997
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  84.9 0.260  0.986
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  88.5 0.345  1.01 
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  93.2 0.457  1.02 
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  95.3 0.494  1.14 
+#&gt; # ... with 429 more rows
+```
+
+---
+
+# Extract (fable::components)
+
+```r
+components(fbl_fit) %&gt;% 
+  gather(component, value, level, slope, season) %&gt;% 
+  ggplot(aes(x = Month, y = value)) + 
+  geom_line() + 
+  facet_grid(vars(component), scales = "free_y")
+```
+
+&lt;img src="figure/ets-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -709,6 +823,47 @@ glance(all_ets)
 #&gt; 10 Australian Capita… Hardware, building and garden supplie… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
 #&gt; # ... with 142 more rows
 ```
+
+---
+
+# Extract (fable::components)
+
+```r
+components(all_ets)
+```
+
+```
+#&gt; # A tsibble: 64,240 x 6 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State                        Industry                                    Month level slope season
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                       &lt;mth&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services 1982 Apr  4.08 0.130 -0.291
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services 1982 May  4.46 0.130 -0.253
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services 1982 Jun  4.32 0.130 -0.715
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services 1982 Jul  4.43 0.130 -0.822
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services 1982 Aug  4.40 0.130 -0.267
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services 1982 Sep  4.24 0.130 -0.420
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services 1982 Oct  4.15 0.130  0.225
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services 1982 Nov  4.19 0.130  0.675
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services 1982 Dec  4.47 0.130  0.821
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services 1983 Jan  4.61 0.130  2.29 
+#&gt; # ... with 64,230 more rows
+```
+
+---
+
+# Extract (fable::components)
+
+
+```r
+components(all_ets) %&gt;% 
+  filter(Industry == "Cafes, restaurants and takeaway food services") %&gt;% 
+  ggplot(aes(x = Month, y = level, colour = State)) + 
+  geom_line()
+```
+
+&lt;img src="figure/batch-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
