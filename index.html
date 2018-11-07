@@ -227,6 +227,23 @@ More information:
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [TFEAM](#) &amp; [useR!2018](https://github.com/robjhyndman/fable-talk-2018/raw/master/fable_useR2018.pdf)
 
 ---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+&lt;br&gt;
+
+# Estimating models
+
+`ETS()`
+
+`ARIMA()`
+
+`LM()`
+
+and many more...
+
+---
 
 ## Model specification - with formulas
 
@@ -408,7 +425,7 @@ ts(fpp2::elecdemand[,"Demand"], frequency = 48) %&gt;%
 ]
 
 ---
-class: inverse, top
+class: inverse
 
 .sticker-float[![broom](resources/broom.png)]
 .sticker-float[![fable](resources/fable.svg)]
@@ -418,9 +435,23 @@ class: inverse, top
 # Extracting model information
 
 `augment()`
+
 `tidy()`
+
 `glance()`
+
 `components()`
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+&lt;br&gt;
+
+# Producing forecasts
+
+`forecast()`
 
 ---
 
@@ -475,6 +506,17 @@ fc_fit %&gt;% forecast(h=12)
 ```
 ]
 ]
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+&lt;br&gt;
+
+# Evaluating accuracy
+
+`accuracy()`
 
 ---
 

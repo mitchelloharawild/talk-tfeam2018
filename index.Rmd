@@ -260,6 +260,23 @@ More information:
 * `r fa("desktop", fill = "white")` [TFEAM](#) & [useR!2018](https://github.com/robjhyndman/fable-talk-2018/raw/master/fable_useR2018.pdf)
 
 ---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+<br>
+
+# Estimating models
+
+`ETS()`
+
+`ARIMA()`
+
+`LM()`
+
+and many more...
+
+---
 
 ## Model specification - with formulas
 
@@ -405,7 +422,7 @@ ts(fpp2::elecdemand[,"Demand"], frequency = 48) %>%
 ]
 
 ---
-class: inverse, top
+class: inverse
 
 .sticker-float[![broom](resources/broom.png)]
 .sticker-float[![fable](resources/fable.svg)]
@@ -415,9 +432,23 @@ class: inverse, top
 # Extracting model information
 
 `augment()`
+
 `tidy()`
+
 `glance()`
+
 `components()`
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+<br>
+
+# Producing forecasts
+
+`forecast()`
 
 ---
 
@@ -444,6 +475,17 @@ fc_fit %>% forecast(h=12)
 ```
 ]
 ]
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+<br>
+
+# Evaluating accuracy
+
+`accuracy()`
 
 ---
 
