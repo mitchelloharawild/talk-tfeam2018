@@ -630,6 +630,68 @@ all_fc &lt;- all_ets %&gt;%
 ```
 
 ---
+
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
+
+# Additional features
+
+## stream()
+## simulate()
+## interpolate()
+
+---
+
+## Adjusting a model (`refit()` and `stream()`)
+
+---
+
+## Simulating future paths (`simulate()`)
+
+---
+
+## Interpolating missing values (`interpolate()`)
+
+
+```r
+tsibbledata::olympic_running
+```
+
+```
+#&gt; # A tsibble: 312 x 4 [4Y]
+#&gt; # Key:       Length, Sex [14]
+#&gt;     Year Length Sex    Time
+#&gt;    &lt;dbl&gt; &lt;fct&gt;  &lt;chr&gt; &lt;dbl&gt;
+#&gt;  1  1896 100m   men    12  
+#&gt;  2  1900 100m   men    11  
+#&gt;  3  1904 100m   men    11  
+#&gt;  4  1908 100m   men    10.8
+#&gt;  5  1912 100m   men    10.8
+#&gt;  6  1916 100m   men    NA  
+#&gt;  7  1920 100m   men    10.8
+#&gt;  8  1924 100m   men    10.6
+#&gt;  9  1928 100m   men    10.8
+#&gt; 10  1932 100m   men    10.3
+#&gt; # ... with 302 more rows
+```
+
+&lt;img src="figure/olympic-running-miss-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Interpolating missing values (`interpolate()`)
+
+
+```r
+olympic_complete &lt;- tsibbledata::olympic_running %&gt;% 
+  LM(Time ~ trend()) %&gt;% 
+  interpolate(tsibbledata::olympic_running)
+```
+
+&lt;img src="figure/olympic-running-completed-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]

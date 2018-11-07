@@ -509,6 +509,69 @@ all_ets %>% accuracy()
 ```
 
 ---
+
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
+
+# Additional features
+
+## stream()
+## simulate()
+## interpolate()
+
+---
+
+## Adjusting a model (`refit()` and `stream()`)
+
+---
+
+## Simulating future paths (`simulate()`)
+
+---
+
+## Interpolating missing values (`interpolate()`)
+
+```{r olympic-running, echo = TRUE}
+tsibbledata::olympic_running
+```
+
+```{r olympic-running-miss}
+tsibbledata::olympic_running %>%
+  ggplot(aes(x=Year, y = Time, colour = Sex)) +
+  geom_line() +
+  geom_point(size = 1) +
+  facet_wrap(~ Length, scales = "free_y", nrow = 2) + 
+  theme_minimal() + 
+  scale_color_brewer(palette = "Dark2") + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  ylab("Running time (seconds)")
+```
+
+---
+
+## Interpolating missing values (`interpolate()`)
+
+```{r olympic-interpolated, echo = TRUE}
+olympic_complete <- tsibbledata::olympic_running %>% 
+  LM(Time ~ trend()) %>% 
+  interpolate(tsibbledata::olympic_running)
+```
+
+```{r olympic-running-completed}
+tsibbledata::olympic_running %>%
+  ggplot(aes(x=Year, y = Time, colour = Sex)) +
+  geom_line(aes(linetype = "Interpolated"), data = olympic_complete) +
+  geom_line(aes(linetype = "Actual")) +
+  geom_point(size = 1) +
+  facet_wrap(~ Length, scales = "free_y", nrow = 2) + 
+  theme_minimal() + 
+  scale_color_brewer(palette = "Dark2") + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  ylab("Running time (seconds)")
+```
+
+---
 class: inverse, top
 
 .sticker-float[![fasster](resources/fasster.png)]
