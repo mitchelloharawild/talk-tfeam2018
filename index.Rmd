@@ -272,7 +272,7 @@ class: inverse
 
 `ARIMA(tsibble, formula, ...)`
 
-`LM(tsibble, formula, ...)`
+`TSLM(tsibble, formula, ...)`
 
 and many more...
 
@@ -763,7 +763,7 @@ tsibbledata::olympic_running %>%
 
 ```{r olympic-interpolated, echo = TRUE}
 olympic_complete <- tsibbledata::olympic_running %>% 
-  LM(Time ~ trend()) %>% 
+  TSLM(Time ~ trend()) %>% 
   interpolate(tsibbledata::olympic_running)
 ```
 
