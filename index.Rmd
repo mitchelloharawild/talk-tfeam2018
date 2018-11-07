@@ -518,6 +518,14 @@ fc_fit %>% forecast(h=12)
 ]
 
 ---
+
+## Producing forecasts
+
+```{r ets-fc-log-plot, echo = TRUE}
+fbl_fit %>% forecast(h=24) %>% autoplot(vic_cafe)
+```
+
+---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -639,7 +647,7 @@ all_fc
 
 ---
 
-## Evaluate
+# Evaluate
 
 ```{r batch-accuracy, echo = TRUE}
 all_ets %>% accuracy()
