@@ -396,10 +396,14 @@ tsibbledata::elecdemand %>%
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r arima-fit, echo = TRUE, eval = FALSE}
-tsibbledata::elecdemand %>% 
-  fable::ARIMA(Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") +
-      WorkDay + Temperature + I(Temperature^2))
+```{r arima-fit, echo = TRUE}
+fbl_elec_fit <- tsibbledata::elecdemand %>% 
+  filter(index < ymd("2014-03-01")) %>%
+  fable::ARIMA(Demand ~ pdq(1,1,1) + PDQ(1,0,1, period = "day") + 
+               WorkDay + Temperature + I(Temperature^2))
+```
+```{r arima-fit-print}
+fbl_elec_fit
 ```
 
 ]
@@ -412,11 +416,15 @@ tsibbledata::elecdemand %>%
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r arima-fc-fit, echo = TRUE, eval = FALSE}
-ts(fpp2::elecdemand[,"Demand"], frequency = 48) %>% 
-  forecast::Arima(order = c(1,1,0), seasonal = c(2,0,2),
-  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")],
-               fpp2::elecdemand[,"Temperature"]^2))
+```{r arima-fc-fit, echo = TRUE}
+ts_elecdemand <- ts(head(fpp2::elecdemand, 2832), frequency = 48)
+fc_elec_fit <- ts_elecdemand[,"Demand"] %>% 
+  forecast::Arima(order = c(1,1,1), seasonal = c(1,0,1),
+                  xreg = cbind(ts_elecdemand[,c("WorkDay", "Temperature")], 
+                               ts_elecdemand[,"Temperature"]^2))
+```
+```{r arima-fc-fit-print}
+fc_elec_fit
 ```
 ]
 ]

@@ -399,9 +399,17 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 .flex-col[
 
 ```r
-tsibbledata::elecdemand %&gt;% 
-  fable::ARIMA(Demand ~ pdq(1,1,0) + PDQ(2,0,2, period = "day") +
-      WorkDay + Temperature + I(Temperature^2))
+fbl_elec_fit &lt;- tsibbledata::elecdemand %&gt;% 
+  filter(index &lt; ymd("2014-03-01")) %&gt;%
+  fable::ARIMA(Demand ~ pdq(1,1,1) + PDQ(1,0,1, period = "day") + 
+               WorkDay + Temperature + I(Temperature^2))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt;   model                  
+#&gt;   &lt;model&gt;                
+#&gt; 1 ARIMA(1,1,1)(1,0,1)[48]
 ```
 
 ]
@@ -416,10 +424,27 @@ tsibbledata::elecdemand %&gt;%
 .flex-col[
 
 ```r
-ts(fpp2::elecdemand[,"Demand"], frequency = 48) %&gt;% 
-  forecast::Arima(order = c(1,1,0), seasonal = c(2,0,2),
-  xreg = cbind(fpp2::elecdemand[,c("WorkDay", "Temperature")],
-               fpp2::elecdemand[,"Temperature"]^2))
+ts_elecdemand &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
+fc_elec_fit &lt;- ts_elecdemand[,"Demand"] %&gt;% 
+  forecast::Arima(order = c(1,1,1), seasonal = c(1,0,1),
+                  xreg = cbind(ts_elecdemand[,c("WorkDay", "Temperature")], 
+                               ts_elecdemand[,"Temperature"]^2))
+```
+
+```
+#&gt; Series: . 
+#&gt; Regression with ARIMA(1,1,1)(1,0,1)[48] errors 
+#&gt; 
+#&gt; Coefficients:
+#&gt;          ar1     ma1    sar1     sma1  ts_elecdemand[, c("WorkDay", "Temperature")].WorkDay
+#&gt;       0.8519  0.1251  0.9976  -0.8158                                                0.0009
+#&gt; s.e.  0.0110  0.0200  0.0006   0.0130                                                0.0056
+#&gt;       ts_elecdemand[, c("WorkDay", "Temperature")].Temperature  ts_elecdemand[, "Temperature"]^2
+#&gt;                                                        -0.0044                             1e-04
+#&gt; s.e.                                                       NaN                             0e+00
+#&gt; 
+#&gt; sigma^2 estimated as 0.001257:  log likelihood=5366.42
+#&gt; AIC=-10716.83   AICc=-10716.78   BIC=-10669.25
 ```
 ]
 ]
