@@ -405,6 +405,21 @@ ts(fpp2::elecdemand[,"Demand"], frequency = 48) %>%
 ]
 
 ---
+class: inverse, top
+
+.sticker-float[![broom](resources/broom.png)]
+.sticker-float[![fable](resources/fable.svg)]
+
+<br>
+
+# Extracting model information
+
+`augment()`
+`tidy()`
+`glance()`
+`components()`
+
+---
 
 ## Producing forecasts
 
