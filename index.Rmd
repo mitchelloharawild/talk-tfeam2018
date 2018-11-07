@@ -645,10 +645,36 @@ components(all_ets) %>%
 
 ```{r batch-fc, echo = TRUE}
 all_fc <- all_ets %>% 
-  forecast(h=12)
+  forecast(h=24)
 ```
 ```{r batch-fc-print}
 all_fc
+```
+
+---
+
+```{r batch-fc-plot, fig.height=7}
+tsibbledata::ausretail %>%
+  filter(year(Month) >= 2000) %>% 
+  ggplot(aes(x=Month, y=Turnover, colour = State)) + 
+  geom_line() + 
+  facet_wrap(~ Industry, scales = "free_y") + 
+  geom_forecast(aes(ymin = lower, ymax = upper, level = level), 
+                fortify(all_fc) %>% filter(year(Month) >= 2000), stat = "identity") +
+  ylab("Turnover ($Million AUD)")
+```
+
+---
+
+```{r batch-fc-cafe-plot, fig.height=7}
+tsibbledata::ausretail %>%
+  filter(Industry == "Cafes, restaurants and takeaway food services") %>% 
+  ggplot(aes(x=Month, y=Turnover, colour = State)) + 
+  geom_line() + 
+  facet_wrap(~ Industry, scales = "free_y") + 
+  geom_forecast(aes(ymin = lower, ymax = upper, level = level), 
+                fortify(all_fc) %>% filter(Industry == "Cafes, restaurants and takeaway food services"), stat = "identity") +
+  ylab("Turnover ($Million AUD)")
 ```
 
 ---
