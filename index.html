@@ -939,17 +939,51 @@ class: inverse, top
 
 # Additional features
 
-## stream()
 ## simulate()
 ## interpolate()
 
 ---
 
-## Adjusting a model (`refit()` and `stream()`)
+## Simulating future paths (`simulate()`)
+
+
+```r
+vic_cafe_sim &lt;- fbl_fit %&gt;% 
+  simulate(h = 24, times = 5)
+```
+
+```
+#&gt; # A tsibble: 120 x 5 [1M]
+#&gt; # Key:       .rep, State, Industry [5]
+#&gt;    State    Industry                                         Month  .rep  .sim
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  996.
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1 1026.
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1209.
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1 1184.
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1 1004.
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1 1040.
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1 1001.
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1 1021.
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  967.
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1 1028.
+#&gt; # ... with 110 more rows
+```
 
 ---
 
 ## Simulating future paths (`simulate()`)
+
+
+```r
+vic_cafe %&gt;% 
+  filter(year(Month) &gt;= 2010) %&gt;% 
+  autoplot(Turnover) + 
+  geom_line(aes(y = .sim, group = .rep), alpha = 0.3, data = vic_cafe_sim)
+```
+
+&lt;img src="figure/vic-cafe-sim-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
 
 ---
 
@@ -977,6 +1011,12 @@ tsibbledata::olympic_running
 #&gt; 10  1932 100m   men    10.3
 #&gt; # ... with 302 more rows
 ```
+
+.footnote[Source: The International Olympic Committee ([www.olympic.org](www.olympic.org))]
+
+---
+
+## Interpolating missing values (`interpolate()`)
 
 &lt;img src="figure/olympic-running-miss-1.svg" style="display: block; margin: auto;" /&gt;
 

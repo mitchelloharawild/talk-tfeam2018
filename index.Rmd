@@ -667,17 +667,32 @@ class: inverse, top
 
 # Additional features
 
-## stream()
 ## simulate()
 ## interpolate()
 
 ---
 
-## Adjusting a model (`refit()` and `stream()`)
+## Simulating future paths (`simulate()`)
+
+```{r vic-cafe-sim, echo = TRUE}
+vic_cafe_sim <- fbl_fit %>% 
+  simulate(h = 24, times = 5)
+```
+```{r vic-cafe-sim-print}
+vic_cafe_sim
+```
 
 ---
 
 ## Simulating future paths (`simulate()`)
+
+```{r vic-cafe-sim-plot, echo = TRUE}
+vic_cafe %>% 
+  filter(year(Month) >= 2010) %>% 
+  autoplot(Turnover) + 
+  geom_line(aes(y = .sim, group = .rep), alpha = 0.3, data = vic_cafe_sim)
+```
+
 
 ---
 
@@ -686,6 +701,12 @@ class: inverse, top
 ```{r olympic-running, echo = TRUE}
 tsibbledata::olympic_running
 ```
+
+.footnote[Source: The International Olympic Committee ([www.olympic.org](www.olympic.org))]
+
+---
+
+## Interpolating missing values (`interpolate()`)
 
 ```{r olympic-running-miss}
 tsibbledata::olympic_running %>%
