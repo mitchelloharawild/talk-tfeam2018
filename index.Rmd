@@ -548,7 +548,7 @@ fbl_fc %>% autoplot(vic_cafe)
 .flex-col[
 ```{r arima-fc, echo = TRUE}
 tsbl_elec_new <- tsibbledata::elecdemand %>% 
-  filter(year(index) == 2014, month(index) == 3)
+  filter(index >= ymd("2014-03-01"), index < ymd("2014-03-14"))
 fbl_elec_fc <- fbl_elec_fit %>% 
   forecast(tsbl_elec_new)
 ```
@@ -566,7 +566,7 @@ fbl_elec_fc
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r arima-fc-fc, echo = TRUE}
-ts_elec_new <- ts(fpp2::elecdemand[2833:4320,], frequency = 48)
+ts_elec_new <- ts(fpp2::elecdemand[2832:3456,], frequency = 48)
 fc_elec_fc <- fc_elec_fit %>% 
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
@@ -579,7 +579,7 @@ fc_elec_fc
 
 ---
 
-## Producing forecasts
+## Producing forecasts with new data
 
 ```{r arima-fc-plot, echo = TRUE}
 fbl_elec_fc %>% autoplot(tsbl_elec)
@@ -587,7 +587,7 @@ fbl_elec_fc %>% autoplot(tsbl_elec)
 
 ---
 
-## Producing forecasts
+## Producing forecasts with new data
 
 ```{r arima-fc-fc-plot, echo = TRUE}
 fc_elec_fc %>% autoplot()

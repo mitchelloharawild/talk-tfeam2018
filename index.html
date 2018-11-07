@@ -436,12 +436,12 @@ fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;%
 #&gt; Regression with ARIMA(1,1,1)(1,0,1)[48] errors 
 #&gt; 
 #&gt; Coefficients:
-#&gt;          ar1     ma1    sar1     sma1  ts_elecdemand[, c("WorkDay", "Temperature")].WorkDay
-#&gt;       0.8519  0.1251  0.9976  -0.8158                                                0.0009
-#&gt; s.e.  0.0110  0.0200  0.0006   0.0130                                                0.0056
-#&gt;       ts_elecdemand[, c("WorkDay", "Temperature")].Temperature  ts_elecdemand[, "Temperature"]^2
-#&gt;                                                        -0.0044                             1e-04
-#&gt; s.e.                                                       NaN                             0e+00
+#&gt;          ar1     ma1    sar1     sma1  ts_elec[, c("WorkDay", "Temperature")].WorkDay
+#&gt;       0.8519  0.1251  0.9976  -0.8158                                          0.0009
+#&gt; s.e.  0.0110  0.0200  0.0006   0.0130                                          0.0056
+#&gt;       ts_elec[, c("WorkDay", "Temperature")].Temperature  ts_elec[, "Temperature"]^2
+#&gt;                                                  -0.0044                       1e-04
+#&gt; s.e.                                                 NaN                       0e+00
 #&gt; 
 #&gt; sigma^2 estimated as 0.001257:  log likelihood=5366.42
 #&gt; AIC=-10716.83   AICc=-10716.78   BIC=-10669.25
@@ -477,20 +477,20 @@ augment(fbl_fit)
 ```
 
 ```
-#&gt; # A tsibble: 438 x 8 [1M]
+#&gt; # A tsibble: 438 x 6 [1M]
 #&gt; # Key:       State, Industry [1]
-#&gt;    State   Industry                             Month State1  Industry1                        Turnover .fitted   .resid
-#&gt;    &lt;chr&gt;   &lt;chr&gt;                                &lt;mth&gt; &lt;chr&gt;   &lt;chr&gt;                               &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
-#&gt;  1 Victor… Cafes, restaurants and takeaway…  1982 Apr Victor… Cafes, restaurants and takeaway…     85.1    84.4  0.00808
-#&gt;  2 Victor… Cafes, restaurants and takeaway…  1982 May Victor… Cafes, restaurants and takeaway…     85.1    85.3 -0.00246
-#&gt;  3 Victor… Cafes, restaurants and takeaway…  1982 Jun Victor… Cafes, restaurants and takeaway…     82.8    81.8  0.0121 
-#&gt;  4 Victor… Cafes, restaurants and takeaway…  1982 Jul Victor… Cafes, restaurants and takeaway…     82.1    86.5 -0.0503 
-#&gt;  5 Victor… Cafes, restaurants and takeaway…  1982 Aug Victor… Cafes, restaurants and takeaway…     81.8    85.0 -0.0372 
-#&gt;  6 Victor… Cafes, restaurants and takeaway…  1982 Sep Victor… Cafes, restaurants and takeaway…     84.6    82.3  0.0279 
-#&gt;  7 Victor… Cafes, restaurants and takeaway…  1982 Oct Victor… Cafes, restaurants and takeaway…     91.7    86.3  0.0620 
-#&gt;  8 Victor… Cafes, restaurants and takeaway…  1982 Nov Victor… Cafes, restaurants and takeaway…     97.7    90.7  0.0776 
-#&gt;  9 Victor… Cafes, restaurants and takeaway…  1982 Dec Victor… Cafes, restaurants and takeaway…    109.    106.   0.0284 
-#&gt; 10 Victor… Cafes, restaurants and takeaway…  1983 Jan Victor… Cafes, restaurants and takeaway…     94.6    96.5 -0.0192 
+#&gt;       Month State    Industry                                      Turnover .fitted   .resid
+#&gt;       &lt;mth&gt; &lt;chr&gt;    &lt;chr&gt;                                            &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 1982 Apr Victoria Cafes, restaurants and takeaway food services     85.1    84.4  0.00808
+#&gt;  2 1982 May Victoria Cafes, restaurants and takeaway food services     85.1    85.3 -0.00246
+#&gt;  3 1982 Jun Victoria Cafes, restaurants and takeaway food services     82.8    81.8  0.0121 
+#&gt;  4 1982 Jul Victoria Cafes, restaurants and takeaway food services     82.1    86.5 -0.0503 
+#&gt;  5 1982 Aug Victoria Cafes, restaurants and takeaway food services     81.8    85.0 -0.0372 
+#&gt;  6 1982 Sep Victoria Cafes, restaurants and takeaway food services     84.6    82.3  0.0279 
+#&gt;  7 1982 Oct Victoria Cafes, restaurants and takeaway food services     91.7    86.3  0.0620 
+#&gt;  8 1982 Nov Victoria Cafes, restaurants and takeaway food services     97.7    90.7  0.0776 
+#&gt;  9 1982 Dec Victoria Cafes, restaurants and takeaway food services    109.    106.   0.0284 
+#&gt; 10 1983 Jan Victoria Cafes, restaurants and takeaway food services     94.6    96.5 -0.0192 
 #&gt; # ... with 428 more rows
 ```
 
@@ -606,7 +606,7 @@ fbl_fc &lt;- fbl_fit %&gt;% forecast(h=24)
 
 ```
 ...
-#&gt; # A fable: 12 x 5 [1M]
+#&gt; # A fable: 24 x 5 [1M]
 #&gt; # Key:     State, Industry [1]
 #&gt;    State    Industry                                         Month Turnover .distribution   
 #&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;          
@@ -667,14 +667,14 @@ fbl_fc %&gt;% autoplot(vic_cafe)
 
 ```r
 tsbl_elec_new &lt;- tsibbledata::elecdemand %&gt;% 
-  filter(year(index) == 2014, month(index) == 3)
+  filter(index &gt;= ymd("2014-03-01"), index &lt; ymd("2014-03-14"))
 fbl_elec_fc &lt;- fbl_elec_fit %&gt;% 
   forecast(tsbl_elec_new)
 ```
 
 ```
 ...
-#&gt; # A fable: 1,488 x 3 [30m]
+#&gt; # A fable: 624 x 3 [30m]
 #&gt;    index               Demand .distribution     
 #&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;            
 #&gt;  1 2014-03-01 00:00:00   4.00 N(4, sd = 0.035)  
@@ -694,7 +694,7 @@ fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
 .flex-col[
 
 ```r
-ts_elec_new &lt;- ts(fpp2::elecdemand[2833:4320,], frequency = 48)
+ts_elec_new &lt;- ts(fpp2::elecdemand[2832:3456,], frequency = 48)
 fc_elec_fc &lt;- fc_elec_fit %&gt;% 
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
@@ -703,11 +703,11 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 ```
 ...
 #&gt;          Point Forecast        Lo 80     Hi 80         Lo 95     Hi 95
-#&gt; 60.00000       3.997574   3.95213988  4.043008   3.928088512  4.067059
-#&gt; 60.02083       3.745928   3.64526905  3.846586   3.591983537  3.899872
-#&gt; 60.04167       3.578941   3.41638898  3.741492   3.330339304  3.827542
-#&gt; 60.06250       3.445818   3.21783784  3.673799   3.097152316  3.794484
-#&gt; 60.08333       3.348451   3.05340195  3.643500   2.897212440  3.799689
+#&gt; 60.00000       3.998366   3.95293203  4.043800   3.928880665  4.067852
+#&gt; 60.02083       3.745728   3.64506891  3.846386   3.591783396  3.899672
+#&gt; 60.04167       3.578827   3.41627494  3.741378   3.330225263  3.827428
+#&gt; 60.06250       3.445876   3.21789603  3.673857   3.097210500  3.794542
+#&gt; 60.08333       3.348393   3.05334377  3.643442   2.897154256  3.799631
 #&gt; 60.10417       3.286099   2.92355700  3.648642   2.731638616  3.840560
 #&gt; 60.12500       3.270871   2.84120993  3.700533   2.613760964  3.927982
 ...
@@ -717,7 +717,7 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 
 ---
 
-## Producing forecasts
+## Producing forecasts with new data
 
 
 ```r
@@ -728,7 +728,7 @@ fbl_elec_fc %&gt;% autoplot(tsbl_elec)
 
 ---
 
-## Producing forecasts
+## Producing forecasts with new data
 
 
 ```r
@@ -874,20 +874,20 @@ augment(all_ets)
 ```
 
 ```
-#&gt; # A tsibble: 64,088 x 8 [1M]
+#&gt; # A tsibble: 64,088 x 6 [1M]
 #&gt; # Key:       State, Industry [152]
-#&gt;    State            Industry                    Month State1           Industry1               Turnover .fitted   .resid
-#&gt;    &lt;chr&gt;            &lt;chr&gt;                       &lt;mth&gt; &lt;chr&gt;            &lt;chr&gt;                      &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
-#&gt;  1 Australian Capi… Cafes, restaurants and…  1982 Apr Australian Capi… Cafes, restaurants and…      4.4    3.92  0.124  
-#&gt;  2 Australian Capi… Cafes, restaurants and…  1982 May Australian Capi… Cafes, restaurants and…      3.4    3.92 -0.132  
-#&gt;  3 Australian Capi… Cafes, restaurants and…  1982 Jun Australian Capi… Cafes, restaurants and…      3.6    3.63 -0.00866
-#&gt;  4 Australian Capi… Cafes, restaurants and…  1982 Jul Australian Capi… Cafes, restaurants and…      4      4.32 -0.0747 
-#&gt;  5 Australian Capi… Cafes, restaurants and…  1982 Aug Australian Capi… Cafes, restaurants and…      3.6    4.15 -0.133  
-#&gt;  6 Australian Capi… Cafes, restaurants and…  1982 Sep Australian Capi… Cafes, restaurants and…      4.2    4.63 -0.0927 
-#&gt;  7 Australian Capi… Cafes, restaurants and…  1982 Oct Australian Capi… Cafes, restaurants and…      4.8    4.96 -0.0331 
-#&gt;  8 Australian Capi… Cafes, restaurants and…  1982 Nov Australian Capi… Cafes, restaurants and…      5.4    5.12  0.0549 
-#&gt;  9 Australian Capi… Cafes, restaurants and…  1982 Dec Australian Capi… Cafes, restaurants and…      6.9    6.88  0.00276
-#&gt; 10 Australian Capi… Cafes, restaurants and…  1983 Jan Australian Capi… Cafes, restaurants and…      3.8    4.25 -0.105  
+#&gt;       Month State                        Industry                                 Turnover .fitted   .resid
+#&gt;       &lt;mth&gt; &lt;chr&gt;                        &lt;chr&gt;                                       &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 1982 Apr Australian Capital Territory Cafes, restaurants and catering services      4.4    3.92  0.124  
+#&gt;  2 1982 May Australian Capital Territory Cafes, restaurants and catering services      3.4    3.92 -0.132  
+#&gt;  3 1982 Jun Australian Capital Territory Cafes, restaurants and catering services      3.6    3.63 -0.00866
+#&gt;  4 1982 Jul Australian Capital Territory Cafes, restaurants and catering services      4      4.32 -0.0747 
+#&gt;  5 1982 Aug Australian Capital Territory Cafes, restaurants and catering services      3.6    4.15 -0.133  
+#&gt;  6 1982 Sep Australian Capital Territory Cafes, restaurants and catering services      4.2    4.63 -0.0927 
+#&gt;  7 1982 Oct Australian Capital Territory Cafes, restaurants and catering services      4.8    4.96 -0.0331 
+#&gt;  8 1982 Nov Australian Capital Territory Cafes, restaurants and catering services      5.4    5.12  0.0549 
+#&gt;  9 1982 Dec Australian Capital Territory Cafes, restaurants and catering services      6.9    6.88  0.00276
+#&gt; 10 1983 Jan Australian Capital Territory Cafes, restaurants and catering services      3.8    4.25 -0.105  
 #&gt; # ... with 64,078 more rows
 ```
 
@@ -994,7 +994,7 @@ all_fc &lt;- all_ets %&gt;%
 ```
 
 ```
-#&gt; # A fable: 1,824 x 5 [1M]
+#&gt; # A fable: 3,648 x 5 [1M]
 #&gt; # Key:     State, Industry [152]
 #&gt;    State                        Industry                                    Month Turnover .distribution  
 #&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                       &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;         
@@ -1008,7 +1008,7 @@ all_fc &lt;- all_ets %&gt;%
 #&gt;  8 Australian Capital Territory Cafes, restaurants and catering services 2019 May     43.1 N(43, sd = 6.9)
 #&gt;  9 Australian Capital Territory Cafes, restaurants and catering services 2019 Jun     42.3 N(42, sd = 7.2)
 #&gt; 10 Australian Capital Territory Cafes, restaurants and catering services 2019 Jul     43.2 N(43, sd = 7.6)
-#&gt; # ... with 1,814 more rows
+#&gt; # ... with 3,638 more rows
 ```
 
 ---
@@ -1121,7 +1121,7 @@ fasster_fc &lt;- fasster_fit %&gt;%
 
 
 ```
-#&gt; # A fable: 1,488 x 3 [30m]
+#&gt; # A fable: 624 x 3 [30m]
 #&gt;    index               Demand .distribution        
 #&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;               
 #&gt;  1 2014-03-01 00:00:00   3.76 t(N(1.3, sd = 0.066))
@@ -1134,7 +1134,7 @@ fasster_fc &lt;- fasster_fit %&gt;%
 #&gt;  8 2014-03-01 03:30:00   3.00 t(N(1.1, sd = 0.069))
 #&gt;  9 2014-03-01 04:00:00   3.02 t(N(1.1, sd = 0.07)) 
 #&gt; 10 2014-03-01 04:30:00   3.06 t(N(1.1, sd = 0.07)) 
-#&gt; # ... with 1,478 more rows
+#&gt; # ... with 614 more rows
 ```
 
 ---
@@ -1172,16 +1172,16 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 #&gt; # Key:       .rep, State, Industry [5]
 #&gt;    State    Industry                                         Month  .rep  .sim
 #&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;int&gt; &lt;dbl&gt;
-#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  996.
-#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1 1026.
-#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1209.
-#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1 1184.
-#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1 1004.
-#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1 1040.
-#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1 1001.
-#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1 1021.
-#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  967.
-#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1 1028.
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  924.
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  937.
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1  994.
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1  868.
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1  817.
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1  884.
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1  904.
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  858.
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  846.
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  889.
 #&gt; # ... with 110 more rows
 ```
 
