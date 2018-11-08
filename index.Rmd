@@ -1195,6 +1195,7 @@ All of the code/examples presented here is implemented and usable.
 ## `simulate()` future paths
 
 ```{r vic-cafe-sim, echo = TRUE, dependson='ets-fit'}
+set.seed(20181108)
 vic_cafe_sim <- fbl_cafe_fit %>%
   simulate(h = 24, times = 5)
 ```
@@ -1211,7 +1212,7 @@ here we're using the vic_cafe ETS model and simulating 24 steps ahead 5 times
 
 ## `simulate()` future paths
 
-```{r vic-cafe-sim-plot, echo = TRUE}
+```{r vic-cafe-sim-plot, echo = TRUE, dependson='vic-cafe-sim'}
 vic_cafe %>%
   filter(year(Month) >= 2010) %>%
   autoplot(Turnover) +
