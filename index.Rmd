@@ -566,7 +566,7 @@ fbl_elec_fc
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r arima-fc-fc, echo = TRUE}
-ts_elec_new <- ts(fpp2::elecdemand[2832:3456,], start = 60, frequency = 48)
+ts_elec_new <- ts(fpp2::elecdemand[2833:3456,], start = 60, frequency = 48)
 fc_elec_fc <- fc_elec_fit %>% 
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
