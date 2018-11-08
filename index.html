@@ -1359,6 +1359,39 @@ fasster_stream &lt;- fasster_fit %&gt;% stream(tsbl_elec_new)
 
 # Decomposition forecasting
 
+
+```r
+library(tsibblestats)
+cafe_dcmp &lt;- vic_cafe %&gt;% 
+  STL(log(Turnover))
+```
+
+
+```
+#&gt; # A dable:       438 x 6 [1M]
+#&gt; # Key:           State, Industry [1]
+#&gt; # Decomposition: Turnover = trend + season_year + remainder
+#&gt;    State    Industry                                         Month trend season_year remainder
+#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  87.4      -3.65      1.40 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  87.7      -1.92     -0.663
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  88.0      -8.59      3.38 
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  88.3      -4.07     -2.18 
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  88.6      -2.46     -4.38 
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  88.9      -2.51     -1.83 
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  89.2       3.36     -0.892
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  89.5       4.53      3.67 
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  89.8      22.5      -2.94 
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  90.0      -0.487     5.04 
+#&gt; # ... with 428 more rows
+```
+
+---
+
+# Decomposition forecasting
+
+&lt;img src="figure/stl-decomposition-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
 ---
 
 # Forecast reconciliation

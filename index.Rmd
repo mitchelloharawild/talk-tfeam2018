@@ -1040,6 +1040,30 @@ fasster_stream %>%
 
 # Decomposition forecasting
 
+```{r stl-decomposition, echo = TRUE}
+library(tsibblestats)
+cafe_dcmp <- vic_cafe %>% 
+  STL(log(Turnover))
+```
+
+```{r stl-decomposition-print}
+cafe_dcmp
+```
+
+---
+
+# Decomposition forecasting
+
+```{r stl-decomposition-plot, fig.height=5.5}
+cafe_dcmp %>% 
+  gather(component, value, trend, season_year, remainder) %>% 
+  ggplot(aes(x = Month, y = value)) + 
+  geom_line() + 
+  facet_grid(fct_rev(component) ~ ., scales = "free_y") + 
+  ggtitle("Victorian cafe, restaurant and takeaway turnover") + 
+  ylab("Turnover ($Million AUD)")
+```
+
 ---
 
 # Forecast reconciliation
