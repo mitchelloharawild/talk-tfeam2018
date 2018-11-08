@@ -845,7 +845,7 @@ fasster_fc
 # Forecasting with fasster
 ```{r fasster-elecfc-plot, echo = TRUE}
 fasster_fc %>% 
-  autoplot(tsbl_elec_new)
+  autoplot(tsbl_elec)
 ```
 
 ---
