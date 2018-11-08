@@ -909,21 +909,6 @@ fbl_elec_fc %&gt;% autoplot(tsbl_elec)
 again, need to show the plot!
 
 ---
-
-## Producing forecasts with new data
-
-
-```r
-fc_elec_fc %&gt;% autoplot()
-```
-
-&lt;img src="figure/arima-fc-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
-
-???
-
-look at the axis, source of many questions/complaints.
-
----
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -1768,38 +1753,6 @@ Providing new decomposition functions is another way that fable can be extended
 
 ---
 
-# Forecast reconciliation
-
-
-```r
-all_ets
-```
-
-```
-#&gt; # A mable: 152 models
-#&gt; # Key:     State, Industry [152]
-#&gt;    State                        Industry                                                          model     
-#&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                                             &lt;model&gt;   
-#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services                          ETS(M,A,A)
-#&gt;  2 Australian Capital Territory Cafes, restaurants and takeaway food services                     ETS(M,A,M)
-#&gt;  3 Australian Capital Territory Clothing retailing                                                ETS(M,A,M)
-#&gt;  4 Australian Capital Territory Clothing, footwear and personal accessory retailing               ETS(M,A,M)
-#&gt;  5 Australian Capital Territory Department stores                                                 ETS(M,A,M)
-#&gt;  6 Australian Capital Territory Electrical and electronic goods retailing                         ETS(M,A,M)
-#&gt;  7 Australian Capital Territory Food retailing                                                    ETS(M,A,M)
-#&gt;  8 Australian Capital Territory Footwear and other personal accessory retailing                   ETS(M,A,M)
-#&gt;  9 Australian Capital Territory Furniture, floor coverings, houseware and textile goods retailing ETS(M,A,M)
-#&gt; 10 Australian Capital Territory Hardware, building and garden supplies retailing                  ETS(M,A,M)
-#&gt; # ... with 142 more rows
-```
-
-???
-
-batch forecasting is a natural match for forecast reconciliation
-there are early plans to support forecast reconciliation with the reconcile() function
-
----
-
 # Interval and distribution accuracy
 
 Winker's score for interval accuracy:
@@ -1849,6 +1802,7 @@ You can use them by adding them to the accuracy measures.
 - NNAR
 - THETA
 - CROSTON
+- Structural models (StructTS)
 
 --
 

@@ -768,18 +768,6 @@ fbl_elec_fc %>% autoplot(tsbl_elec)
 again, need to show the plot!
 
 ---
-
-## Producing forecasts with new data
-
-```{r arima-fc-fc-plot, echo = TRUE}
-fc_elec_fc %>% autoplot()
-```
-
-???
-
-look at the axis, source of many questions/complaints.
-
----
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -1440,19 +1428,6 @@ Providing new decomposition functions is another way that fable can be extended
 
 ---
 
-# Forecast reconciliation
-
-```{r reconciliation-example, echo = TRUE}
-all_ets
-```
-
-???
-
-batch forecasting is a natural match for forecast reconciliation
-there are early plans to support forecast reconciliation with the reconcile() function
-
----
-
 # Interval and distribution accuracy
 
 Winker's score for interval accuracy:
@@ -1494,6 +1469,7 @@ You can use them by adding them to the accuracy measures.
 - NNAR
 - THETA
 - CROSTON
+- Structural models (StructTS)
 
 --
 
