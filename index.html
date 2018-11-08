@@ -23,7 +23,7 @@ class: inverse
 ### Mitchell O'Hara-Wild (&lt;svg style="height:0.8em;top:.04em;position:relative;fill:#1da1f2;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt;[@mitchoharawild](https://twitter.com/mitchoharawild))
 ### Rob Hyndman (&lt;svg style="height:0.8em;top:.04em;position:relative;fill:#1da1f2;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt;[@robjhyndman](https://twitter.com/robjhyndman/))
 ### 8 November 2018
-### Slides @ [???](#)
+### Slides @ [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
 ]
 
 ---
@@ -1011,9 +1011,9 @@ fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
 ```
 
 ```
-#&gt;                        ME       RMSE        MAE        MPE      MAPE       MASE        ACF1 Theil's U
-#&gt; Training set 5.388019e-05 0.03540232 0.02590156 0.01497925 0.5509356 0.04361646 0.007303311        NA
-#&gt; Test set     2.302582e-01 0.57995358 0.46591641 3.92470129 9.9612025 0.78457153 0.992901516  3.456586
+#&gt;                        ME       RMSE        MAE         MPE      MAPE       MASE      ACF1 Theil's U
+#&gt; Training set  0.000352514 0.04789049 0.03483026  0.01553156 0.7183844 0.05865179 0.4352692        NA
+#&gt; Test set     -0.065460770 0.50458482 0.36563548 -2.53964478 8.1384634 0.61570527 0.9924566  3.319844
 ```
 ]
 ]
@@ -1188,18 +1188,18 @@ glance(retail_ets)
 
 ```
 #&gt; # A tibble: 152 x 11
-#&gt;    State              Industry                              method   period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
-#&gt;    &lt;chr&gt;              &lt;chr&gt;                                 &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1 Australian Capita… Cafes, restaurants and catering serv… ETS(M,A…     12 0.0955 -1527. 3088. 3090. 3158. 2.99  4.08 
-#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food… ETS(M,A…     12 0.0663 -1586. 3205. 3207. 3275. 3.77  5.81 
-#&gt;  3 Australian Capita… Clothing retailing                    ETS(M,A…     12 0.0767 -1228. 2489. 2491. 2558. 0.792 1.07 
-#&gt;  4 Australian Capita… Clothing, footwear and personal acce… ETS(M,A…     12 0.0623 -1350. 2735. 2736. 2804. 1.52  1.89 
-#&gt;  5 Australian Capita… Department stores                     ETS(M,A…     12 0.0619 -1481. 2997. 2998. 3066. 2.01  2.02 
-#&gt;  6 Australian Capita… Electrical and electronic goods reta… ETS(M,A…     12 0.0903 -1477. 2988. 2990. 3058. 2.45  3.56 
-#&gt;  7 Australian Capita… Food retailing                        ETS(M,A…     12 0.0330 -1725. 3483. 3485. 3553. 6.05  7.35 
-#&gt;  8 Australian Capita… Footwear and other personal accessor… ETS(M,A…     12 0.0666  -958. 1950. 1952. 2020. 0.341 0.420
-#&gt;  9 Australian Capita… Furniture, floor coverings, housewar… ETS(M,A…     12 0.0889 -1385. 2804. 2805. 2873. 2.30  3.10 
-#&gt; 10 Australian Capita… Hardware, building and garden suppli… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
+#&gt;    State              Industry                               method   period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering servi… ETS(M,A…     12 0.0955 -1527. 3088. 3090. 3158. 2.99  4.08 
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food … ETS(M,A…     12 0.0663 -1586. 3205. 3207. 3275. 3.77  5.81 
+#&gt;  3 Australian Capita… Clothing retailing                     ETS(M,A…     12 0.0767 -1228. 2489. 2491. 2558. 0.792 1.07 
+#&gt;  4 Australian Capita… Clothing, footwear and personal acces… ETS(M,A…     12 0.0623 -1350. 2735. 2736. 2804. 1.52  1.89 
+#&gt;  5 Australian Capita… Department stores                      ETS(M,A…     12 0.0619 -1481. 2997. 2998. 3066. 2.01  2.02 
+#&gt;  6 Australian Capita… Electrical and electronic goods retai… ETS(M,A…     12 0.0903 -1477. 2988. 2990. 3058. 2.45  3.56 
+#&gt;  7 Australian Capita… Food retailing                         ETS(M,A…     12 0.0330 -1725. 3483. 3485. 3553. 6.05  7.35 
+#&gt;  8 Australian Capita… Footwear and other personal accessory… ETS(M,A…     12 0.0666  -958. 1950. 1952. 2020. 0.341 0.420
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware… ETS(M,A…     12 0.0889 -1385. 2804. 2805. 2873. 2.30  3.10 
+#&gt; 10 Australian Capita… Hardware, building and garden supplie… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
 #&gt; # ... with 142 more rows
 ```
 
@@ -1319,18 +1319,18 @@ retail_ets %&gt;% accuracy()
 ```
 #&gt; # A tibble: 152 x 10
 #&gt; # Groups:   State [?]
-#&gt;    State              Industry                                 Type         ME  RMSE   MAE     MPE  MAPE     ACF1  MASE
-#&gt;    &lt;chr&gt;              &lt;chr&gt;                                    &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
-#&gt;  1 Australian Capita… Cafes, restaurants and catering services Train… -0.0789  1.73  1.25  -1.39    7.05  1.09e-1 0.425
-#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food se… Train… -0.0728  1.94  1.40  -0.721   4.93  4.41e-2 0.403
-#&gt;  3 Australian Capita… Clothing retailing                       Train…  0.00299 0.890 0.645 -0.533   5.81  1.51e-1 0.519
-#&gt;  4 Australian Capita… Clothing, footwear and personal accesso… Train…  0.0422  1.23  0.861 -0.347   4.65  2.51e-1 0.567
-#&gt;  5 Australian Capita… Department stores                        Train… -0.146   1.42  1.05  -0.805   4.53 -1.18e-1 0.751
-#&gt;  6 Australian Capita… Electrical and electronic goods retaili… Train…  0.00335 1.56  1.09  -0.933   6.57  3.58e-2 0.497
-#&gt;  7 Australian Capita… Food retailing                           Train…  0.112   2.46  1.82   0.0573  2.36  2.83e-2 0.314
-#&gt;  8 Australian Capita… Footwear and other personal accessory r… Train…  0.0219  0.584 0.375 -0.403   4.98  2.23e-1 0.587
-#&gt;  9 Australian Capita… Furniture, floor coverings, houseware a… Train… -0.0379  1.52  0.964 -0.953   6.35  6.48e-2 0.435
-#&gt; 10 Australian Capita… Hardware, building and garden supplies … Train…  0.00548 1.11  0.751 -0.759   6.95  9.89e-4 0.572
+#&gt;    State              Industry                                 Type          ME  RMSE   MAE     MPE  MAPE     ACF1  MASE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering services Traini… -0.0789  1.73  1.25  -1.39    7.05  1.09e-1 0.425
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food se… Traini… -0.0728  1.94  1.40  -0.721   4.93  4.41e-2 0.403
+#&gt;  3 Australian Capita… Clothing retailing                       Traini…  0.00299 0.890 0.645 -0.533   5.81  1.51e-1 0.519
+#&gt;  4 Australian Capita… Clothing, footwear and personal accesso… Traini…  0.0422  1.23  0.861 -0.347   4.65  2.51e-1 0.567
+#&gt;  5 Australian Capita… Department stores                        Traini… -0.146   1.42  1.05  -0.805   4.53 -1.18e-1 0.751
+#&gt;  6 Australian Capita… Electrical and electronic goods retaili… Traini…  0.00335 1.56  1.09  -0.933   6.57  3.58e-2 0.497
+#&gt;  7 Australian Capita… Food retailing                           Traini…  0.112   2.46  1.82   0.0573  2.36  2.83e-2 0.314
+#&gt;  8 Australian Capita… Footwear and other personal accessory r… Traini…  0.0219  0.584 0.375 -0.403   4.98  2.23e-1 0.587
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware a… Traini… -0.0379  1.52  0.964 -0.953   6.35  6.48e-2 0.435
+#&gt; 10 Australian Capita… Hardware, building and garden supplies … Traini…  0.00548 1.11  0.751 -0.759   6.95  9.89e-4 0.572
 #&gt; # ... with 142 more rows
 ```
 
@@ -1829,7 +1829,7 @@ class: inverse, top
 
 &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 512 512"&gt;&lt;path d="M500 384c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v308h436zM456 96H344c-21.4 0-32.1 25.9-17 41l32.9 32.9-72 72.9-55.6-55.6c-4.7-4.7-12.2-4.7-16.9 0L96.4 305c-4.7 4.6-4.8 12.2-.2 16.9l28.5 29.4c4.7 4.8 12.4 4.9 17.1.1l82.1-82.1 55.5 55.5c4.7 4.7 12.3 4.7 17 0l109.2-109.2L439 249c15.1 15.1 41 4.4 41-17V120c0-13.3-10.7-24-24-24z"/&gt;&lt;/svg&gt; Keep updated: [tidyverts.org](http://www.tidyverts.org)
 
-&lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; Review slides: [???](#)
+&lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; Review slides: [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
 
 &lt;br&gt;
 

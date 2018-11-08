@@ -89,7 +89,7 @@ theme_set(
 ### Mitchell O'Hara-Wild (`r fa("twitter", fill="#1da1f2")`[@mitchoharawild](https://twitter.com/mitchoharawild))
 ### Rob Hyndman (`r fa("twitter", fill="#1da1f2")`[@robjhyndman](https://twitter.com/robjhyndman/))
 ### 8 November 2018
-### Slides @ [???](#)
+### Slides @ [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
 ]
 
 ---
@@ -1496,7 +1496,7 @@ class: inverse, top
 
 `r fa("chart-line", fill = "white")` Keep updated: [tidyverts.org](http://www.tidyverts.org)
 
-`r fa("desktop", fill = "white")` Review slides: [???](#)
+`r fa("desktop", fill = "white")` Review slides: [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
 
 <br>
 
