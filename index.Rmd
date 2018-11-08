@@ -390,11 +390,11 @@ discuss with reference to the example formula above
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fit, echo = TRUE}
-fbl_fit <- vic_cafe %>%
+fbl_cafe_fit <- vic_cafe %>%
   fable::ETS(Turnover ~ season("M"))
 ```
 ```{r ets-fit-print, dependson='ets-fit'}
-fbl_fit
+fbl_cafe_fit
 ```
 
 
@@ -506,7 +506,7 @@ elecdemand is strongly driven by temperature
 ```{r arima-fit, echo = TRUE}
 tsbl_elec <- tsibbledata::elecdemand %>% filter(index < ymd("2014-03-01"))
 fbl_elec_fit <- tsbl_elec %>%
-  fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") + 
+  fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") +
                WorkDay + Temperature + I(Temperature^2))
 ```
 ```{r arima-fit-print, dependson='arima-fit'}
@@ -531,9 +531,9 @@ brief note about pdq being non-seasonal and PDQ being seasonal
 .flex-col[
 ```{r arima-fc-fit, echo = TRUE}
 ts_elec <- ts(head(fpp2::elecdemand, 2832), frequency = 48)
-fc_elec_fit <- ts_elec[,"Demand"] %>% 
+fc_elec_fit <- ts_elec[,"Demand"] %>%
   forecast::Arima(order = c(1,0,1), seasonal = c(1,1,1),
-                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")], 
+                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")],
                                ts_elec[,"Temperature"]^2))
 ```
 ```{r arima-fc-fit-print, dependson='arima-fc-fit'}
@@ -579,7 +579,7 @@ fable introduces the components verb which extracts model components (such as st
 # Augment tsibble with model fits (broom::augment)
 
 ```{r ets-augment, echo = TRUE, dependson='ets-fit'}
-augment(fbl_fit)
+augment(fbl_cafe_fit)
 ```
 
 ???
@@ -591,7 +591,7 @@ adds fitted model information to the model data
 # Tidy model parameters (broom::tidy)
 
 ```{r ets-tidy, echo = TRUE, dependson='ets-fit'}
-tidy(fbl_fit)
+tidy(fbl_cafe_fit)
 ```
 
 ???
@@ -602,7 +602,7 @@ accesses model coefficients in a tidy format
 
 # Glance a one-row model summary (broom::glance)
 ```{r ets-glance, echo = TRUE, dependson='ets-fit'}
-glance(fbl_fit)
+glance(fbl_cafe_fit)
 ```
 
 ???
@@ -613,7 +613,7 @@ reveals useful model diagnostics such as AIC, sigma, etc.
 
 # Extract model components (fable::components)
 ```{r ets-components, echo = TRUE, dependson='ets-fit'}
-components(fbl_fit)
+components(fbl_cafe_fit)
 ```
 
 ???
@@ -624,7 +624,7 @@ these components are particularly interesting to plot
 
 # Extract model components (fable::components)
 ```{r ets-components-plot, echo = TRUE, dependson='ets-fit'}
-components(fbl_fit) %>%
+components(fbl_cafe_fit) %>%
   gather(component, value, level, slope, season) %>%
   ggplot(aes(x = Month, y = value)) +
   geom_line() +
@@ -659,10 +659,10 @@ Can use either new_data or h, h is easier, new_data is more precise and supports
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fc-log, echo = TRUE, dependson='ets-fit'}
-fbl_fc <- fbl_fit %>% forecast(h=24)
+fbl_cafe_fc <- fbl_cafe_fit %>% forecast(h=24)
 ```
 ```{r ets-fc-log-print, output.lines = 1:8, dependson='ets-fc-log'}
-fbl_fc
+fbl_cafe_fc
 ```
 ]
 ]
@@ -768,18 +768,6 @@ fbl_elec_fc %>% autoplot(tsbl_elec)
 again, need to show the plot!
 
 ---
-
-## Producing forecasts with new data
-
-```{r arima-fc-fc-plot, echo = TRUE, dependson='arima-fc-fc'}
-fc_elec_fc %>% autoplot()
-```
-
-???
-
-look at the axis, source of many questions/complaints.
-
----
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
@@ -808,7 +796,7 @@ Meaning you can remove measures you don't want, add the ones you do, and even sp
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-accuracy-log, echo = TRUE, dependson='ets-fit'}
-fbl_fit %>% accuracy()
+fbl_cafe_fit %>% accuracy()
 ```
 ]
 ]
@@ -896,10 +884,10 @@ if only we could forecast them all?
 # Estimate
 
 ```{r batch-ets, echo = TRUE}
-all_ets <- tsibbledata::ausretail %>%
+retail_ets <- tsibbledata::ausretail %>%
   ETS(Turnover)
 ```
-```{r batch-ets-print}
+```{r batch-ets-print, dependson='batch-ets'}
 retail_ets
 ```
 
@@ -916,7 +904,7 @@ the first model is slightly different from the rest
 
 # Extract (broom::augment)
 
-```{r batch-augment, echo = TRUE}
+```{r batch-augment, echo = TRUE, dependson='batch-ets'}
 augment(retail_ets)
 ```
 
@@ -930,7 +918,7 @@ We can extract model fits and residuals with augments
 
 # Extract (broom::tidy)
 
-```{r batch-tidy, echo = TRUE}
+```{r batch-tidy, echo = TRUE, dependson='batch-ets'}
 tidy(retail_ets)
 ```
 
@@ -941,7 +929,7 @@ Look at the fitted coefficients
 ---
 
 # Extract (broom::glance)
-```{r batch-glance, echo = TRUE}
+```{r batch-glance, echo = TRUE, dependson='batch-ets'}
 glance(retail_ets)
 ```
 
@@ -952,7 +940,7 @@ See the model summary statistics
 ---
 
 # Extract (fable::components)
-```{r batch-components, echo = TRUE}
+```{r batch-components, echo = TRUE, dependson='batch-ets'}
 components(retail_ets)
 ```
 
@@ -965,8 +953,8 @@ this is particularly interesting to visualise
 
 # Extract (fable::components)
 
-```{r batch-components-plot, echo = TRUE}
-components(all_ets) %>%
+```{r batch-components-plot, echo = TRUE, dependson='batch-ets'}
+components(retail_ets) %>%
   filter(Industry == "Cafes, restaurants and takeaway food services") %>%
   ggplot(aes(x = Month, y = level, colour = State)) +
   geom_line()
@@ -981,11 +969,11 @@ We can see without seasonality that NSW has highest turnover, followed by VIC.
 
 # Forecast
 
-```{r batch-fc, echo = TRUE}
-all_fc <- all_ets %>%
+```{r batch-fc, echo = TRUE, dependson='batch-ets'}
+retail_fc <- retail_ets %>%
   forecast(h=24)
 ```
-```{r batch-fc-print}
+```{r batch-fc-print, dependson='batch-fc'}
 retail_fc
 ```
 
@@ -995,14 +983,14 @@ here we are forecasting 24 steps ahead from the last observation of each series
 
 ---
 
-```{r batch-fc-plot, fig.height=7}
+```{r batch-fc-plot, fig.height=7, dependson='batch-fc'}
 tsibbledata::ausretail %>%
   filter(year(Month) >= 2000) %>%
   ggplot(aes(x=Month, y=Turnover, colour = State)) +
   geom_line() +
   facet_wrap(~ Industry, scales = "free_y") +
   geom_forecast(aes(ymin = lower, ymax = upper, level = level),
-                fortify(all_fc) %>% filter(year(Month) >= 2000), stat = "identity") +
+                fortify(retail_fc) %>% filter(year(Month) >= 2000), stat = "identity") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -1014,14 +1002,14 @@ Very hard to see/visualise this many series, so let's focus on the cafe industry
 
 ---
 
-```{r batch-fc-cafe-plot, fig.height=7}
+```{r batch-fc-cafe-plot, fig.height=7, dependson='batch-fc'}
 tsibbledata::ausretail %>%
   filter(Industry == "Cafes, restaurants and takeaway food services") %>%
   ggplot(aes(x=Month, y=Turnover, colour = State)) +
   geom_line() +
   facet_wrap(~ Industry, scales = "free_y") +
   geom_forecast(aes(ymin = lower, ymax = upper, level = level),
-                fortify(all_fc) %>% filter(Industry == "Cafes, restaurants and takeaway food services"), stat = "identity") +
+                fortify(retail_fc) %>% filter(Industry == "Cafes, restaurants and takeaway food services"), stat = "identity") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -1033,7 +1021,7 @@ Good separation of series, the forecasts for each series appears reasonable
 
 # Evaluate
 
-```{r batch-accuracy, echo = TRUE}
+```{r batch-accuracy, echo = TRUE, dependson='batch-ets'}
 retail_ets %>% accuracy()
 ```
 
@@ -1207,7 +1195,7 @@ All of the code/examples presented here is implemented and usable.
 ## `simulate()` future paths
 
 ```{r vic-cafe-sim, echo = TRUE, dependson='ets-fit'}
-vic_cafe_sim <- fbl_fit %>%
+vic_cafe_sim <- fbl_cafe_fit %>%
   simulate(h = 24, times = 5)
 ```
 ```{r vic-cafe-sim-print, dependson='vic-cafe-sim'}
