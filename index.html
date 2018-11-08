@@ -1273,16 +1273,46 @@ olympic_complete &lt;- olympic_running %&gt;%
 
 # `refit()` and `stream()` new data
 
-&lt;img src="figure/stream-data-1.svg" style="display: block; margin: auto;" /&gt;
-
-
-???
-
 `refit()` allows a model to be applied to a new dataset.
 
 `stream()` allows a model to be extended using new data.
 
+--
+
 Models parameters can be re-estimated (could be time consuming) or not.
+
+---
+
+# `stream()` new data
+
+
+```r
+fasster_fc
+```
+
+&lt;img src="figure/fasster-fc-recall-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `stream()` new data
+
+
+```r
+tsbl_elec_new
+```
+
+&lt;img src="figure/stream-data-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `stream()` new data
+
+
+```r
+fasster_stream &lt;- fasster_fit %&gt;% stream(tsbl_elec_new)
+```
+
+&lt;img src="figure/fasster-stream-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
 ---
 

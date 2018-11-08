@@ -941,7 +941,43 @@ olympic_running %>%
 
 # `refit()` and `stream()` new data
 
-```{r, stream-data}
+`refit()` allows a model to be applied to a new dataset.
+
+`stream()` allows a model to be extended using new data.
+
+--
+
+Models parameters can be re-estimated (could be time consuming) or not.
+
+---
+
+# `stream()` new data
+
+```{r fasster-fc-recall, echo = TRUE, eval = FALSE}
+fasster_fc
+```
+
+```{r fasster-fc-recall-plot}
+tsbl_elec_newer <- tsibbledata::elecdemand %>% 
+  filter(index >= ymd("2014-03-14"), index < ymd("2014-04-01"))
+fasster_fc %>% autoplot(tsbl_elec) +
+  xlab(NULL) + 
+  ylab("Electricity Demanded (GW)") + 
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank()) + 
+  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) + 
+  ylim(c(1.95, 9.75))
+```
+
+---
+
+# `stream()` new data
+
+```{r stream-newdata-code, echo = TRUE, eval = FALSE}
+tsbl_elec_new
+```
+
+```{r stream-data}
 tsbl_elec %>% 
   ggplot(aes(x = index, y = Demand)) +
   geom_line(aes(colour = "Model data")) + 
@@ -950,17 +986,29 @@ tsbl_elec %>%
   ylab("Electricity Demanded (GW)") + 
   scale_colour_brewer(palette = "Dark2") + 
   theme_minimal() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "bottom", legend.title = element_blank()) + 
+  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) + 
+  ylim(c(1.95, 9.75))
 ```
 
+---
 
-???
+# `stream()` new data
 
-`refit()` allows a model to be applied to a new dataset.
+```{r fasster-stream, echo = TRUE}
+fasster_stream <- fasster_fit %>% stream(tsbl_elec_new)
+```
 
-`stream()` allows a model to be extended using new data.
-
-Models parameters can be re-estimated (could be time consuming) or not.
+```{r fasster-stream-fc-plot}
+fasster_stream %>% 
+  forecast(tsbl_elec_newer) %>% 
+  autoplot(rbind(tsbl_elec, tsbl_elec_new)) + 
+  xlab(NULL) + 
+  ylab("Electricity Demanded (GW)") + 
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank()) + 
+  ylim(c(1.95, 9.75))
+```
 
 ---
 
