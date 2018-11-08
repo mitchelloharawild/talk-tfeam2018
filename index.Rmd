@@ -1076,6 +1076,12 @@ all_ets
 
 # Interval and distribution accuracy
 
+```{r}
+fbl_elec_fc %>% 
+  accuracy(tsbl_elec_new, list(interval_measures, distribution_measures))
+```
+
+
 ---
 
 # More modelling methods
