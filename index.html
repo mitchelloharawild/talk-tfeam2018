@@ -35,6 +35,11 @@ class: center
 &lt;hr&gt;
 ]
 
+???
+
+Before - annual/quarterly/monthly data was common
+Now - daily/hourly/etc is common, which complicates analysis
+
 ---
 class: center
 
@@ -69,7 +74,7 @@ class: center
 .pull-left[
 ### Multiple seasonality
 ### Irregular time intervals
-### Frequent obsrevations
+### Frequent observations
 ]
 .pull-right[
 ### Many variables and series
@@ -85,6 +90,10 @@ class: center
 .sticker[![fable](resources/fable.svg)]
 .sticker[![fasster](resources/fasster.png)]
 ]
+
+???
+
+Outline talk structure, a bit on tsibble, mostly about fable, and a bit on fasster
 
 ---
 
@@ -105,6 +114,12 @@ More information:
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/tsibble](https://github.com/tidyverts/tsibble)
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"/&gt;&lt;/svg&gt; [tsibble site](https://pkg.earo.me/tsibble/)
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [NY Meetup](http://slides.earo.me/bigapple/) &amp; [useR!2018](http://slides.earo.me/useR18/)
+
+???
+
+tsibble is the base for fable, providing a modern data structure for time series.
+Note that a whole talk can be (and has been) made just about tsibble!
+Check the links for more details
 
 ---
 
@@ -133,13 +148,17 @@ tsibbledata::ausretail
 #&gt; # ... with 64,078 more rows
 ```
 
-&lt;!-- Features: --&gt;
-
-&lt;!-- * Monthly observations --&gt;
-&lt;!-- * One response variable --&gt;
-&lt;!-- * 180 individual series (by State and Industry) --&gt;
-
 .footnote[Source: Australian Bureau of Statistics. Catalogue No. 8501.0]
+
+???
+
+Features:
+
+* Monthly observations
+* One response variable
+* &gt;64,000 rows
+* Turnover in $M AUD
+* 152 individual series (by State and Industry)
 
 ---
 
@@ -152,6 +171,10 @@ vic_cafe &lt;- tsibbledata::ausretail %&gt;%
 ```
 &lt;img src="figure/cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+Focus on Victorian cafes and restaurants (why? vic loves coffee + food)
+Detail patterns in data (trend, multiplicative seasonality, noise)
 ---
 
 ## A more common/realistic example
@@ -180,12 +203,24 @@ tsibbledata::elecdemand
 
 .footnote[Source: Australian Energy Market Operator, and the Australian Bureau of Meteorology]
 
+???
+
+* Data contains only one series (no keys), with 3 variables
+* &gt; 17500 rows
+* Data is for 2014, with half-hourly data
+* We want to forecast Demand.
+
 ---
 
 ### Electricity demand (Monthly)
 <video autoplay>
         <source src="resources/anim1.mp4" type="video/mp4">
       </video>
+
+???
+
+cafe dataset was monthly - if elec demand was monthly it'd look like this.
+Annual seasonal pattern is evident - winter and summer has high demand
 
 ---
 
@@ -194,18 +229,35 @@ tsibbledata::elecdemand
         <source src="resources/anim2.mp4" type="video/mp4">
       </video>
 
+???
+
+data isn't monthly, if instead it were daily we see more patterns
+annual pattern remains, but now there is a working day / not working day pattern
+also, we start to see noise
+
 ---
 
 ### Electricity demand (Half-hourly)
 <video autoplay>
         <source src="resources/anim3.mp4" type="video/mp4">
       </video>
+
+???
+
+data is actually half-hourly, when plotting this there is too much to see!
 ---
 
 ### Electricity demand (Half-hourly)
 <video autoplay>
         <source src="resources/anim4.mp4" type="video/mp4">
       </video>
+
+???
+
+zooming in, we see half-hourly detail.
+reveals a third seasonal pattern that changes within days
+people demand more electricity when awake, and with peaks in morning and afternoon
+weekend pattern is similar, with a less extreme peak in the morning (relaxed waking hours)
 
 ---
 
@@ -226,6 +278,12 @@ More information:
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/fable](https://github.com/tidyverts/fable)
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [TFEAM](#) &amp; [useR!2018](https://github.com/robjhyndman/fable-talk-2018/raw/master/fable_useR2018.pdf)
 
+???
+
+explain fable name
+introduce fable as the tool for tidy forecasting
+keep it brief - as it is the content of the talk! :)
+
 ---
 class: inverse
 
@@ -243,6 +301,12 @@ class: inverse
 
 and many more...
 
+???
+
+Before forecasting - we need a model
+at minimum, a model requires a tsibble and a model formula
+in this talk, we'll be modelling with ETS, ARIMA, and TSLM
+
 ---
 
 ## Model specification - with formulas
@@ -254,6 +318,11 @@ Using a formula is a concise method of model specification, and is used in most 
 transformation(y) ~ trend() + season(period = "day") + x
 ```
 
+???
+
+formulas are common in regression models, but not in time series
+formulas are concise and human readable
+
 --
 
 .pull-left[
@@ -264,6 +333,10 @@ transformation(y) ~ trend() + season(period = "day") + x
   (with automatic back-transformation)
 ]
 
+???
+
+also mention bias adjustments
+
 --
 
 .pull-right[
@@ -272,6 +345,10 @@ transformation(y) ~ trend() + season(period = "day") + x
 * Model specific special functions
 * Exogenous regressors
 ]
+
+???
+
+discuss with reference to the example formula above
 
 ---
 
@@ -297,6 +374,12 @@ fbl_fit &lt;- vic_cafe %&gt;%
 
 ]
 ]
+
+???
+
+response is Turnover
+recap why we're using multiplicative seasonality here
+specials not specified (error(), trend()) are automatically chosen to be "M" and "Ad"
 
 --
 
@@ -326,9 +409,16 @@ fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 ...
 ```
 
+]
+]
 
-]
-]
+???
+
+here's the same model in forecast would be produced
+notice the unnatural interface for creating a `ts`! 
+
+This is frustrating when your data already contains a time column and is prone to errors!
+What is your data had missing values? gaps? ahh!
 
 ---
 
@@ -353,6 +443,12 @@ vic_cafe %&gt;%
 
 ]
 ]
+
+???
+
+transformations in fable are natural
+like forecast, they will be automatically back transformed
+note that we now want additive seasonality as logs of multiplicative components gives additive components
 
 --
 
@@ -384,11 +480,22 @@ ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
 ]
 ]
 
+???
+
+forecast only supports BoxCox transformations, and you need to know that lambda=0 is a log
+
+fable also supports combinations transformations, such as log(Turnover + 1) for data with low counts and zeroes!
+
 ---
 
 ## Using exogenous information
 
 &lt;img src="figure/elecdemand-xreg-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+fable makes xreg easy
+elecdemand is strongly driven by temperature
 
 ---
 
@@ -414,6 +521,12 @@ fbl_elec_fit &lt;- tsbl_elec %&gt;%
 
 ]
 ]
+
+???
+
+need to use ARIMA instead of ETS here, as ETS does not support xreg
+xreg can be added to model formula directly
+brief note about pdq being non-seasonal and PDQ being seasonal
 
 --
 
@@ -449,6 +562,15 @@ fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;%
 ]
 ]
 
+???
+
+xreg with forecast is not pretty!
+manipulating the time series object can be hard (no date comparisons here!) and xregs must be specified as a numerical matrix
+
+BUT!
+The forecast output is more informative, we see some coefficients and other interesting things
+In fable, we only see the selected model
+
 ---
 class: inverse
 
@@ -466,6 +588,11 @@ class: inverse
 `glance(mable, ...)`
 
 `components(mable, ...)`
+
+???
+
+to access this extra model information we use tidy verbs
+fable introduces the components verb which extracts model components (such as states from ETS)
 
 ---
 
@@ -493,6 +620,10 @@ augment(fbl_fit)
 #&gt; 10 1983 Jan Victoria Cafes, restaurants and takeaway food services     94.6    96.5 -0.0192 
 #&gt; # ... with 428 more rows
 ```
+
+???
+
+adds fitted model information to the model data
 
 ---
 
@@ -526,6 +657,10 @@ tidy(fbl_fit)
 #&gt; 17 Victoria Cafes, restaurants and takeaway food services s10    0.986
 ```
 
+???
+
+accesses model coefficients in a tidy format
+
 ---
 
 # Glance a one-row model summary (broom::glance)
@@ -540,6 +675,10 @@ glance(fbl_fit)
 #&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 #&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)     12 0.0375 -2406. 4848. 4850. 4922.  213.  339.
 ```
+
+???
+
+reveals useful model diagnostics such as AIC, sigma, etc.
 
 ---
 
@@ -567,6 +706,10 @@ components(fbl_fit)
 #&gt; # ... with 429 more rows
 ```
 
+???
+
+these components are particularly interesting to plot
+
 ---
 
 # Extract model components (fable::components)
@@ -581,6 +724,10 @@ components(fbl_fit) %&gt;%
 
 &lt;img src="figure/ets-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+shows upward trend and stable/constant seasonal pattern
+
 ---
 class: inverse
 
@@ -591,6 +738,11 @@ class: inverse
 ## Forecast future values
 
 `forecast(mable, new_data, h, ...)`
+
+???
+
+Now that we've fitted our model, how do we get our forecasts?
+Can use either new_data or h, h is easier, new_data is more precise and supports xreg
 
 ---
 
@@ -619,6 +771,10 @@ fbl_fc &lt;- fbl_fit %&gt;% forecast(h=24)
 ]
 ]
 
+???
+
+quickly here!
+
 --
 
 &lt;hr&gt;
@@ -646,6 +802,14 @@ fc_fc &lt;- fc_fit %&gt;% forecast(h=24)
 ]
 ]
 
+???
+
+same interface.
+you'll find once you have your model fitted, the interface is consistent for all models
+
+Note the difference between intervals and distribution.
+Storing distribution allows us to compute any interval without re-computing forecasts
+
 ---
 
 ## Producing forecasts
@@ -656,6 +820,11 @@ fbl_fc %&gt;% autoplot(vic_cafe)
 ```
 
 &lt;img src="figure/ets-fc-log-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+Can't show a table of forecasts without looking at them too!
+Forecasts look reasonable.
 
 ---
 
@@ -684,6 +853,10 @@ fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
 ```
 ]
 ]
+
+???
+
+Forecasting with new data is easy in fable, just provide a tsibble that contains the necessary xregs
 
 --
 
@@ -715,6 +888,11 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 ]
 ]
 
+???
+
+this is a bit difficult with forecast, as you need to construct the xreg matrix yourself precisely!
+Also note the time output in forecast vs fable! So many decimals!
+
 ---
 
 ## Producing forecasts with new data
@@ -726,6 +904,10 @@ fbl_elec_fc %&gt;% autoplot(tsbl_elec)
 
 &lt;img src="figure/arima-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+again, need to show the plot!
+
 ---
 
 ## Producing forecasts with new data
@@ -736,6 +918,10 @@ fc_elec_fc %&gt;% autoplot()
 ```
 
 &lt;img src="figure/arima-fc-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+look at the axis, source of many questions/complaints.
 
 ---
 class: inverse
@@ -749,6 +935,14 @@ class: inverse
 `accuracy(mable, measures, ...)`
 
 `accuracy(fable, new_data, measures, ...)`
+
+???
+
+accuracy can be computed using on a model (in sample) or forecast (out of sample)
+When evaluating forecasts, you must provide new data
+
+fable adds the flexibility to specify a list of accuracy measures!
+Meaning you can remove measures you don't want, add the ones you do, and even specify your own accuracy measure functions
 
 ---
 
@@ -772,6 +966,9 @@ fbl_fit %&gt;% accuracy()
 ]
 ]
 
+???
+quickly
+
 --
 
 &lt;hr&gt;
@@ -790,6 +987,10 @@ fc_fit %&gt;% forecast::accuracy()
 ```
 ]
 ]
+
+???
+identical interface
+fable keeps contextual information from the keys
 
 ---
 
@@ -832,6 +1033,11 @@ fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
 ]
 ]
 
+???
+
+interface is similar, although forecast requires you to specify a univariate time series to compare against
+forecast provides both training and test accuracy here, despite only providing forecasts (can be confusing)
+
 ---
 class: inverse
 
@@ -851,6 +1057,11 @@ fbl_fit
 #&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
 #&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
 ```
+
+???
+
+reiterate the package name - fable is for forecasting with tables
+there's a reason why this output is a bit suspicious, a table containing one model?
 
 --
 
@@ -876,6 +1087,11 @@ tsibbledata::ausretail
 #&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
 #&gt; # ... with 64,078 more rows
 ```
+
+???
+
+but our dataset is a time series containing 152 series!
+if only we could forecast them all?
 
 ---
 
@@ -905,6 +1121,15 @@ all_ets &lt;- tsibbledata::ausretail %&gt;%
 #&gt; # ... with 142 more rows
 ```
 
+???
+
+that's exactly what we can do!
+fable naturally supports batch forecasting for each series
+we now have 152 models, using the same code as before
+
+here we haven't specified any model specials, so everything is automatically selected
+the first model is slightly different from the rest
+
 ---
 
 # Extract (broom::augment)
@@ -932,6 +1157,12 @@ augment(all_ets)
 #&gt; # ... with 64,078 more rows
 ```
 
+???
+
+quickly through extract functions
+
+We can extract model fits and residuals with augments
+
 ---
 
 # Extract (broom::tidy)
@@ -958,6 +1189,10 @@ tidy(all_ets)
 #&gt; # ... with 2,423 more rows
 ```
 
+???
+
+Look at the fitted coefficients
+
 ---
 
 # Extract (broom::glance)
@@ -982,6 +1217,10 @@ glance(all_ets)
 #&gt; 10 Australian Capita… Hardware, building and garden supplie… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
 #&gt; # ... with 142 more rows
 ```
+
+???
+
+See the model summary statistics
 
 ---
 
@@ -1009,6 +1248,11 @@ components(all_ets)
 #&gt; # ... with 64,230 more rows
 ```
 
+???
+
+and view the components
+this is particularly interesting to visualise
+
 ---
 
 # Extract (fable::components)
@@ -1023,6 +1267,10 @@ components(all_ets) %&gt;%
 
 &lt;img src="figure/batch-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+here is the level state from all of the AUS for cafe/restaurant turnover
+We can see without seasonality that NSW has highest turnover, followed by VIC.
 
 ---
 
@@ -1052,13 +1300,27 @@ all_fc &lt;- all_ets %&gt;%
 #&gt; # ... with 3,638 more rows
 ```
 
+???
+to forecast the models is just as easy!
+here we are forecasting 24 steps ahead from the last observation of each series
+
 ---
 
 &lt;img src="figure/batch-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+incase you don't believe it because the code is so simple... here's the proof
+All 152 forecasts plotted with 80% and 95% intervals
+
+Very hard to see/visualise this many series, so let's focus on the cafe industry
+
 ---
 
 &lt;img src="figure/batch-fc-cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+Good separation of series, the forecasts for each series appears reasonable
 
 ---
 
@@ -1087,12 +1349,23 @@ all_ets %&gt;% accuracy()
 #&gt; # ... with 142 more rows
 ```
 
+???
+
+accuracy evaluation is just as easy
+scale independent measures such as MAPE and MASE are more meaningful here for comparison (as each series is on different scales)
+
 ---
 class: inverse
 
 .sticker-float[![fable](resources/fable.svg)]
 
 .title[Extending fable]
+
+???
+
+so that's the core functionality of fable so far, we're working steadily to introduce new things.
+
+fable is designed to be a modelling ecosystem rather than just one package.
 
 --
 
@@ -1105,6 +1378,10 @@ Extension packages can:
 * Introduce new models
 
 Which will then be usable with all other transformations, measures and models!
+
+???
+
+read slide
 
 ---
 class: inverse, top
@@ -1124,17 +1401,36 @@ More information:
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/fasster](https://github.com/tidyverts/fasster)
 * &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [useR!2018](https://mitchelloharawild.com/user2018/)
 
+???
+
+The first extension package for fable is fasster.
+fasster is a model extension, which works best on data with switching patterns
+it supports xreg and missing values, and has flexible model specification thanks to fable
+
+this will be a very brief introduction - more details are available on GitHub and in the useR talk
+
 ---
 
 ## Switching seasonality
 
 &lt;img src="figure/fasster-noswitching-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+here is the zoomed in electricity demand data
+
 ---
 
 ## Switching seasonality
 
 &lt;img src="figure/fasster-switching-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+remember, we saw a separate daily pattern for working days and non working days
+our arima model didn't perform very well because it didn't capture this pattern
+
+this pattern is common in most sub-daily time series, which are becoming more common!
 
 ---
 
@@ -1153,6 +1449,16 @@ fasster_fit &lt;- tsbl_elec %&gt;%
 #&gt;   &lt;model&gt;
 #&gt; 1 FASSTER
 ```
+
+???
+
+fasster uses the same model interface as fable
+I've chosen to use a log transformation, which will be automatically back transformed by fable
+
+My formula specification includes trig seasonality for the daily pattern, and a level, which switches for working and non-working days.
+I've also included Temperature and Temperature^2 as xregs
+
+--
 
 
 ```r
@@ -1178,6 +1484,10 @@ fasster_fc &lt;- fasster_fit %&gt;%
 #&gt; # ... with 614 more rows
 ```
 
+???
+Once I've fitted the model, the function to get forecasts is identical to the ARIMA example.
+We get our fable as a result (note that the distribution is transformed!)
+
 ---
 
 # Forecasting with fasster
@@ -1189,6 +1499,10 @@ fasster_fc %&gt;%
 
 &lt;img src="figure/fasster-elecfc-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+the forecasts look much better than ARIMA, as the model is better specified to capture the data patterns.
+
 ---
 class: inverse
 
@@ -1197,6 +1511,11 @@ class: inverse
 .title[What's next?]
 
 # A peek into the future of fable!
+
+???
+
+Lot's of new features are planned.
+All of the code/examples presented here is implemented and usable.
 
 ---
 
@@ -1226,6 +1545,11 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 #&gt; # ... with 110 more rows
 ```
 
+???
+
+simulating data is a nice way to present the uncertainty in forecasts
+here we're using the vic_cafe ETS model and simulating 24 steps ahead 5 times
+
 ---
 
 ## `simulate()` future paths
@@ -1239,6 +1563,11 @@ vic_cafe %&gt;%
 ```
 
 &lt;img src="figure/vic-cafe-sim-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+from the simulation you can see substantial uncertainty.
+the seasonal pattern is still evident.
 
 ---
 
@@ -1275,6 +1604,14 @@ tsibbledata::olympic_running
 
 .footnote[Source: The International Olympic Committee ([www.olympic.org](www.olympic.org))]
 
+???
+
+Missing values are especially relevant for modern time series datasets
+if you observe things more frequently, there is a higher chance something will go wrong
+
+This data is the fastest running time from the olympics (men and women, 100m-10,000m)
+The data has missing values in 1916, 1940, and 1944 due to the world wars.
+
 ---
 
 ## `interpolate()` missing values
@@ -1310,6 +1647,11 @@ olympic_complete &lt;- olympic_running %&gt;%
 &lt;img src="figure/olympic-running-completed-1.svg" style="display: block; margin: auto;" /&gt;
 ]
 
+???
+
+model based interpolation in fable is easy.
+here we've fitted a LM with linear trend, and used it to interpolate the data.
+
 ---
 
 # `refit()` and `stream()` new data
@@ -1317,6 +1659,10 @@ olympic_complete &lt;- olympic_running %&gt;%
 `refit()` allows a model to be applied to a new dataset.
 
 `stream()` allows a model to be extended using new data.
+
+???
+
+similar functions in that they modify a model to suit new data.
 
 --
 
@@ -1333,6 +1679,10 @@ fasster_fc
 
 &lt;img src="figure/fasster-fc-recall-plot-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+earlier, we fitted a fasster model to electricity demand and got these forecasts
+
 ---
 
 # `stream()` new data
@@ -1344,6 +1694,11 @@ tsbl_elec_new
 
 &lt;img src="figure/stream-data-1.svg" style="display: block; margin: auto;" /&gt;
 
+???
+
+well, two weeks later we've gotten more data!
+normally to include this new information we would need to re-estimate the full model again (could be time consuming!)
+
 ---
 
 # `stream()` new data
@@ -1354,6 +1709,10 @@ fasster_stream &lt;- fasster_fit %&gt;% stream(tsbl_elec_new)
 ```
 
 &lt;img src="figure/fasster-stream-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+using stream(), we update the fitted model to include the new data, without needing to re-estimate the full model.
 
 ---
 
@@ -1386,11 +1745,26 @@ cafe_dcmp &lt;- vic_cafe %&gt;%
 #&gt; # ... with 428 more rows
 ```
 
+???
+
+decompositions are also a useful forecasting technique
+in forecast, stl forecasting is possible
+
+in fable, there are plans to be able to forecast the components from any decomposition
+here we have decomposed the cafe data using STL
+the dable knows how to recombine components to get the original forecast
+
 ---
 
 # Decomposition forecasting
 
 &lt;img src="figure/stl-decomposition-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+here's a plot of those components.
+
+Providing new decomposition functions is another way that fable can be extended
 
 ---
 
@@ -1419,10 +1793,41 @@ all_ets
 #&gt; # ... with 142 more rows
 ```
 
+???
+
+batch forecasting is a natural match for forecast reconciliation
+there are early plans to support forecast reconciliation with the reconcile() function
+
 ---
 
 # Interval and distribution accuracy
 
+Winker's score for interval accuracy:
+`$$W(\ell_t,u_t,y_t) = \begin{cases} (u_t-\ell_t) &amp; \ell_t &lt; y_t &lt; u_t \\
+    (u_t-\ell_t) + \frac{2}{\alpha}(\ell_t-y_t) &amp; y_t &lt; \ell_t \\
+    (u_t-\ell_t) + \frac{2}{\alpha}(y_t-u_t) &amp; y_t &gt; u_t.\end{cases}$$`
+
+Percentile scoring for distribution accuracy:
+`$$L(q_{i,t}, y_t) = \begin{cases} (1 - i/100) (q_{i,t} - y_t) &amp; y_t&lt; q_{i,t}\\
+	  (i/100) (y_t - q_{i,t}) &amp; y_t\ge q_{i,t}.\end{cases}$$`
+
+???
+
+Evaluating the accuracy of prediction intervals is also possible in fable.
+Currently two measures are supported, winker's for interval accuracy and percentile for distributions
+
+---
+
+# Interval and distribution accuracy
+
+
+```r
+fbl_elec_fc %&gt;% 
+  accuracy(
+    new_data = tsbl_elec_new, 
+    measures = list(winkler = winkler_score, percentile = percentile_score)
+  )
+```
 
 ```
 #&gt; # A tibble: 1 x 3
@@ -1431,6 +1836,9 @@ all_ets
 #&gt; 1 Test     28.8      0.882
 ```
 
+???
+
+You can use them by adding them to the accuracy measures.
 
 ---
 
@@ -1445,6 +1853,11 @@ all_ets
 --
 
 (any many more...)
+
+???
+
+There are many more modelling functions available in forecast left to add into fable.
+fable will keep growing and getting better
 
 ---
 
@@ -1465,7 +1878,7 @@ class: inverse, top
 
 &lt;br&gt;
 
-This work is licensed as &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M254.8 214.8l-33.2 17.3c-9.4-19.6-25.2-19.9-27.5-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.7-7.1 30.6-21.3l30.6 15.5c-6.2 11.5-25.7 39-65.1 39-22.6 0-74-10.3-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 66 36zm143.1 0l-32.8 17.3c-9.5-19.8-25.7-19.9-27.9-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.6-7.1 30.5-21.3l31 15.5c-2.1 3.7-21.4 39-65.1 39-22.7 0-74-9.9-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 65.7 36zM247.6 8C389.4 8 496 118.1 496 256c0 147.1-118.5 248-248.4 248C113.6 504 0 394.5 0 256 0 123.1 104.7 8 247.6 8zm.8 44.7C130.2 52.7 44.7 150.6 44.7 256c0 109.8 91.2 202.8 203.7 202.8 103.2 0 202.8-81.1 202.8-202.8.1-113.8-90.2-203.3-202.8-203.3z"/&gt;&lt;/svg&gt; BY-NC 4.0.
+.footnote[This work is licensed as &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M254.8 214.8l-33.2 17.3c-9.4-19.6-25.2-19.9-27.5-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.7-7.1 30.6-21.3l30.6 15.5c-6.2 11.5-25.7 39-65.1 39-22.6 0-74-10.3-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 66 36zm143.1 0l-32.8 17.3c-9.5-19.8-25.7-19.9-27.9-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.6-7.1 30.5-21.3l31 15.5c-2.1 3.7-21.4 39-65.1 39-22.7 0-74-9.9-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 65.7 36zM247.6 8C389.4 8 496 118.1 496 256c0 147.1-118.5 248-248.4 248C113.6 504 0 394.5 0 256 0 123.1 104.7 8 247.6 8zm.8 44.7C130.2 52.7 44.7 150.6 44.7 256c0 109.8 91.2 202.8 203.7 202.8 103.2 0 202.8-81.1 202.8-202.8.1-113.8-90.2-203.3-202.8-203.3z"/&gt;&lt;/svg&gt; BY-NC 4.0.]
 ]
     </textarea>
 <script src="libs/remark-latest.min.js"></script>
