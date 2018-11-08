@@ -1086,6 +1086,16 @@ fbl_elec_fc %>%
 
 # More modelling methods
 
+- BATS/TBATS
+- DSHW
+- NNAR
+- THETA
+- CROSTON
+
+--
+
+(any many more...)
+
 ---
 
 class: inverse, top
