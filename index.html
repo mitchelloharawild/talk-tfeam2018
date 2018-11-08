@@ -359,7 +359,7 @@ discuss with reference to the example formula above
 .flex-col[
 
 ```r
-fbl_fit &lt;- vic_cafe %&gt;% 
+fbl_cafe_fit &lt;- vic_cafe %&gt;% 
   fable::ETS(Turnover ~ season("M"))
 ```
 
@@ -390,7 +390,7 @@ specials not specified (error(), trend()) are automatically chosen to be "M" and
 .flex-col[
 
 ```r
-fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
+fc_cafe_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
   forecast::ets("ZZM")
 ```
 
@@ -508,7 +508,7 @@ elecdemand is strongly driven by temperature
 ```r
 tsbl_elec &lt;- tsibbledata::elecdemand %&gt;% filter(index &lt; ymd("2014-03-01"))
 fbl_elec_fit &lt;- tsbl_elec %&gt;%
-  fable::ARIMA(Demand ~ pdq(1,1,1) + PDQ(1,0,1, period = "day") + 
+  fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") + 
                WorkDay + Temperature + I(Temperature^2))
 ```
 
@@ -516,7 +516,7 @@ fbl_elec_fit &lt;- tsbl_elec %&gt;%
 #&gt; # A mable: 1 model
 #&gt;   model                               
 #&gt;   &lt;model&gt;                             
-#&gt; 1 LM w/ ARIMA(1,1,1)(1,0,1)[48] errors
+#&gt; 1 LM w/ ARIMA(1,0,1)(1,1,1)[48] errors
 ```
 
 ]
@@ -539,25 +539,25 @@ brief note about pdq being non-seasonal and PDQ being seasonal
 ```r
 ts_elec &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
 fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;% 
-  forecast::Arima(order = c(1,1,1), seasonal = c(1,0,1),
+  forecast::Arima(order = c(1,0,1), seasonal = c(1,1,1),
                   xreg = cbind(ts_elec[,c("WorkDay", "Temperature")], 
                                ts_elec[,"Temperature"]^2))
 ```
 
 ```
 #&gt; Series: . 
-#&gt; Regression with ARIMA(1,1,1)(1,0,1)[48] errors 
+#&gt; Regression with ARIMA(1,0,1)(1,1,1)[48] errors 
 #&gt; 
 #&gt; Coefficients:
 #&gt;          ar1     ma1    sar1     sma1  ts_elec[, c("WorkDay", "Temperature")].WorkDay
-#&gt;       0.8519  0.1251  0.9976  -0.8158                                          0.0009
-#&gt; s.e.  0.0110  0.0200  0.0006   0.0130                                          0.0056
+#&gt;       0.9951  0.7214  0.3221  -0.9137                                          0.0002
+#&gt; s.e.  0.0019  0.0106  0.0224   0.0123                                          0.0074
 #&gt;       ts_elec[, c("WorkDay", "Temperature")].Temperature  ts_elec[, "Temperature"]^2
-#&gt;                                                  -0.0044                       1e-04
+#&gt;                                                  -0.0118                       3e-04
 #&gt; s.e.                                                 NaN                       0e+00
 #&gt; 
-#&gt; sigma^2 estimated as 0.001257:  log likelihood=5366.42
-#&gt; AIC=-10716.83   AICc=-10716.78   BIC=-10669.25
+#&gt; sigma^2 estimated as 0.002339:  log likelihood=4454.81
+#&gt; AIC=-8893.61   AICc=-8893.56   BIC=-8846.16
 ```
 ]
 ]
@@ -600,7 +600,7 @@ fable introduces the components verb which extracts model components (such as st
 
 
 ```r
-augment(fbl_fit)
+augment(fbl_cafe_fit)
 ```
 
 ```
@@ -631,7 +631,7 @@ adds fitted model information to the model data
 
 
 ```r
-tidy(fbl_fit)
+tidy(fbl_cafe_fit)
 ```
 
 ```
@@ -666,7 +666,7 @@ accesses model coefficients in a tidy format
 # Glance a one-row model summary (broom::glance)
 
 ```r
-glance(fbl_fit)
+glance(fbl_cafe_fit)
 ```
 
 ```
@@ -685,7 +685,7 @@ reveals useful model diagnostics such as AIC, sigma, etc.
 # Extract model components (fable::components)
 
 ```r
-components(fbl_fit)
+components(fbl_cafe_fit)
 ```
 
 ```
@@ -715,7 +715,7 @@ these components are particularly interesting to plot
 # Extract model components (fable::components)
 
 ```r
-components(fbl_fit) %&gt;% 
+components(fbl_cafe_fit) %&gt;% 
   gather(component, value, level, slope, season) %&gt;% 
   ggplot(aes(x = Month, y = value)) + 
   geom_line() + 
@@ -753,7 +753,7 @@ Can use either new_data or h, h is easier, new_data is more precise and supports
 .flex-col[
 
 ```r
-fbl_fc &lt;- fbl_fit %&gt;% forecast(h=24)
+fbl_cafe_fc &lt;- fbl_cafe_fit %&gt;% forecast(h=24)
 ```
 
 ```
@@ -784,7 +784,7 @@ quickly here!
 .flex-col[
 
 ```r
-fc_fc &lt;- fc_fit %&gt;% forecast(h=24)
+fc_cafe_fc &lt;- fc_cafe_fit %&gt;% forecast(h=24)
 ```
 
 ```
@@ -816,7 +816,7 @@ Storing distribution allows us to compute any interval without re-computing fore
 
 
 ```r
-fbl_fc %&gt;% autoplot(vic_cafe)
+fbl_cafe_fc %&gt;% autoplot(vic_cafe)
 ```
 
 &lt;img src="figure/ets-fc-log-plot-1.svg" style="display: block; margin: auto;" /&gt;
@@ -846,9 +846,9 @@ fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
 #&gt; # A fable: 624 x 3 [30m]
 #&gt;    index               Demand .distribution     
 #&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;            
-#&gt;  1 2014-03-01 00:00:00   4.00 N(4, sd = 0.035)  
-#&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.079)
-#&gt;  3 2014-03-01 01:00:00   3.58 N(3.6, sd = 0.13) 
+#&gt;  1 2014-03-01 00:00:00   3.99 N(4, sd = 0.048)  
+#&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.096)
+#&gt;  3 2014-03-01 01:00:00   3.60 N(3.6, sd = 0.13) 
 ...
 ```
 ]
@@ -875,14 +875,14 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 
 ```
 ...
-#&gt;          Point Forecast        Lo 80     Hi 80         Lo 95     Hi 95
-#&gt; 60.00000       3.997574   3.95213988  4.043008   3.928088512  4.067059
-#&gt; 60.02083       3.745928   3.64526905  3.846586   3.591983537  3.899872
-#&gt; 60.04167       3.578941   3.41638898  3.741492   3.330339304  3.827542
-#&gt; 60.06250       3.445818   3.21783784  3.673799   3.097152316  3.794484
-#&gt; 60.08333       3.348451   3.05340195  3.643500   2.897212440  3.799689
-#&gt; 60.10417       3.286099   2.92355700  3.648642   2.731638616  3.840560
-#&gt; 60.12500       3.270871   2.84120993  3.700533   2.613760964  3.927982
+#&gt;          Point Forecast    Lo 80    Hi 80     Lo 95    Hi 95
+#&gt; 60.00000       3.988066 3.926087 4.050045 3.8932776 4.082855
+#&gt; 60.02083       3.749454 3.626331 3.872578 3.5611538 3.937755
+#&gt; 60.04167       3.596770 3.434395 3.759144 3.3484389 3.845100
+#&gt; 60.06250       3.464519 3.270970 3.658068 3.1685111 3.760527
+#&gt; 60.08333       3.372009 3.151901 3.592117 3.0353826 3.708635
+#&gt; 60.10417       3.318911 3.075343 3.562479 2.9464058 3.691416
+#&gt; 60.12500       3.310711 3.045955 3.575468 2.9058013 3.715621
 ...
 ```
 ]
@@ -938,7 +938,7 @@ Meaning you can remove measures you don't want, add the ones you do, and even sp
 .flex-col[
 
 ```r
-fbl_fit %&gt;% accuracy()
+fbl_cafe_fit %&gt;% accuracy()
 ```
 
 ```
@@ -963,7 +963,7 @@ quickly
 .flex-col[
 
 ```r
-fc_fit %&gt;% forecast::accuracy()
+fc_cafe_fit %&gt;% forecast::accuracy()
 ```
 
 ```
@@ -991,9 +991,9 @@ fbl_elec_fc %&gt;% accuracy(tsbl_elec_new)
 
 ```
 #&gt; # A tibble: 1 x 7
-#&gt;   Type     ME  RMSE   MAE   MPE  MAPE  ACF1
-#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-#&gt; 1 Test  0.230 0.580 0.466  3.92  9.96 0.993
+#&gt;   Type       ME  RMSE   MAE   MPE  MAPE  ACF1
+#&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Test  -0.0655 0.505 0.366 -2.54  8.14 0.992
 ```
 ]
 ]
@@ -1011,9 +1011,9 @@ fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
 ```
 
 ```
-#&gt;                        ME       RMSE        MAE        MPE      MAPE       MASE        ACF1 Theil's U
-#&gt; Training set 5.388019e-05 0.03540232 0.02590156 0.01497925 0.5509356 0.04361646 0.007303311        NA
-#&gt; Test set     2.302582e-01 0.57995358 0.46591641 3.92470129 9.9612025 0.78457153 0.992901516  3.456586
+#&gt;                        ME       RMSE        MAE         MPE      MAPE       MASE      ACF1 Theil's U
+#&gt; Training set  0.000352514 0.04789049 0.03483026  0.01553156 0.7183844 0.05865179 0.4352692        NA
+#&gt; Test set     -0.065460770 0.50458482 0.36563548 -2.53964478 8.1384634 0.61570527 0.9924566  3.319844
 ```
 ]
 ]
@@ -1032,7 +1032,7 @@ class: inverse
 
 
 ```r
-fbl_fit
+fbl_cafe_fit
 ```
 
 ```
@@ -1084,7 +1084,7 @@ if only we could forecast them all?
 
 
 ```r
-all_ets &lt;- tsibbledata::ausretail %&gt;% 
+retail_ets &lt;- tsibbledata::ausretail %&gt;% 
   ETS(Turnover)
 ```
 
@@ -1121,7 +1121,7 @@ the first model is slightly different from the rest
 
 
 ```r
-augment(all_ets)
+augment(retail_ets)
 ```
 
 ```
@@ -1154,7 +1154,7 @@ We can extract model fits and residuals with augments
 
 
 ```r
-tidy(all_ets)
+tidy(retail_ets)
 ```
 
 ```
@@ -1183,7 +1183,7 @@ Look at the fitted coefficients
 # Extract (broom::glance)
 
 ```r
-glance(all_ets)
+glance(retail_ets)
 ```
 
 ```
@@ -1212,7 +1212,7 @@ See the model summary statistics
 # Extract (fable::components)
 
 ```r
-components(all_ets)
+components(retail_ets)
 ```
 
 ```
@@ -1244,7 +1244,7 @@ this is particularly interesting to visualise
 
 
 ```r
-components(all_ets) %&gt;% 
+components(retail_ets) %&gt;% 
   filter(Industry == "Cafes, restaurants and takeaway food services") %&gt;% 
   ggplot(aes(x = Month, y = level, colour = State)) + 
   geom_line()
@@ -1263,7 +1263,7 @@ We can see without seasonality that NSW has highest turnover, followed by VIC.
 
 
 ```r
-all_fc &lt;- all_ets %&gt;% 
+retail_fc &lt;- retail_ets %&gt;% 
   forecast(h=24)
 ```
 
@@ -1313,7 +1313,7 @@ Good separation of series, the forecasts for each series appears reasonable
 
 
 ```r
-all_ets %&gt;% accuracy()
+retail_ets %&gt;% accuracy()
 ```
 
 ```
@@ -1508,7 +1508,7 @@ All of the code/examples presented here is implemented and usable.
 
 
 ```r
-vic_cafe_sim &lt;- fbl_fit %&gt;% 
+vic_cafe_sim &lt;- fbl_cafe_fit %&gt;% 
   simulate(h = 24, times = 5)
 ```
 
@@ -1517,16 +1517,16 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 #&gt; # Key:       .rep, State, Industry [5]
 #&gt;    State    Industry                                         Month  .rep  .sim
 #&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;int&gt; &lt;dbl&gt;
-#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  924.
-#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  937.
-#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1  994.
-#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1  868.
-#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1  817.
-#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1  884.
-#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1  904.
-#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  858.
-#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  846.
-#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  889.
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  945.
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  924.
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1079.
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1  917.
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1  861.
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1  898.
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1  872.
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  852.
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  915.
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  922.
 #&gt; # ... with 110 more rows
 ```
 
@@ -1717,16 +1717,16 @@ cafe_dcmp &lt;- vic_cafe %&gt;%
 #&gt; # Decomposition: Turnover = trend + season_year + remainder
 #&gt;    State    Industry                                         Month trend season_year remainder
 #&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
-#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  87.4      -3.65      1.40 
-#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  87.7      -1.92     -0.663
-#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  88.0      -8.59      3.38 
-#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  88.3      -4.07     -2.18 
-#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  88.6      -2.46     -4.38 
-#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  88.9      -2.51     -1.83 
-#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  89.2       3.36     -0.892
-#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  89.5       4.53      3.67 
-#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  89.8      22.5      -2.94 
-#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  90.0      -0.487     5.04 
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  4.46   -0.0295     0.0131 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  4.46   -0.0109    -0.0101 
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  4.47   -0.0738     0.0207 
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  4.47   -0.0354    -0.0308 
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  4.48   -0.0166    -0.0571 
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  4.48   -0.0206    -0.0234 
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  4.49    0.0274     0.00536
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  4.49    0.0401     0.0525 
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  4.49    0.164      0.0374 
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  4.50    0.000138   0.0532 
 #&gt; # ... with 428 more rows
 ```
 
