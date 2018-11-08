@@ -694,7 +694,7 @@ fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
 .flex-col[
 
 ```r
-ts_elec_new &lt;- ts(fpp2::elecdemand[2832:3456,], frequency = 48)
+ts_elec_new &lt;- ts(fpp2::elecdemand[2832:3456,], start = 60, frequency = 48)
 fc_elec_fc &lt;- fc_elec_fit %&gt;% 
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
@@ -752,7 +752,7 @@ class: inverse
 
 ---
 
-## Evaluating accuracy
+## Evaluating model accuracy
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
@@ -787,6 +787,47 @@ fc_fit %&gt;% forecast::accuracy()
 ```
 #&gt;                    ME     RMSE      MAE       MPE     MAPE      MASE      ACF1
 #&gt; Training set 1.473341 14.59307 10.39603 0.3384752 2.867766 0.3495456 0.1312039
+```
+]
+]
+
+---
+
+## Evaluating forecast accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_elec_fc %&gt;% accuracy(tsbl_elec_new)
+```
+
+```
+#&gt; # A tibble: 1 x 7
+#&gt;   Type     ME  RMSE   MAE   MPE  MAPE  ACF1
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Test  0.230 0.580 0.466  3.92  9.96 0.993
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
+```
+
+```
+#&gt;                        ME       RMSE        MAE        MPE       MAPE       MASE        ACF1 Theil's U
+#&gt; Training set 5.388019e-05 0.03540232 0.02590156 0.01497925  0.5509356 0.04361646 0.007303311        NA
+#&gt; Test set     2.309304e-01 0.60607677 0.48979080 3.84537424 10.5911178 0.82477438 0.976259898  3.666351
 ```
 ]
 ]

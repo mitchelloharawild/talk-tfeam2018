@@ -566,7 +566,7 @@ fbl_elec_fc
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r arima-fc-fc, echo = TRUE}
-ts_elec_new <- ts(fpp2::elecdemand[2832:3456,], frequency = 48)
+ts_elec_new <- ts(fpp2::elecdemand[2832:3456,], start = 60, frequency = 48)
 fc_elec_fc <- fc_elec_fit %>% 
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
@@ -608,7 +608,7 @@ class: inverse
 
 ---
 
-## Evaluating accuracy
+## Evaluating model accuracy
 
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
@@ -628,6 +628,32 @@ fbl_fit %>% accuracy()
 .flex-col[
 ```{r ets-fc-accuracy-log, echo = TRUE}
 fc_fit %>% forecast::accuracy()
+```
+]
+]
+
+---
+
+## Evaluating forecast accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+```{r arima-fc-accuracy, echo = TRUE}
+fbl_elec_fc %>% accuracy(tsbl_elec_new)
+```
+]
+]
+
+--
+
+<hr>
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+```{r arima-fc-fc-accuracy, echo = TRUE}
+fc_elec_fc %>% forecast::accuracy(ts_elec_new[,"Demand"])
 ```
 ]
 ]
