@@ -359,11 +359,7 @@ discuss with reference to the example formula above
 .flex-col[
 
 ```r
-<<<<<<< Updated upstream
-fbl_cafe_fit &lt;- vic_cafe %&gt;% 
-=======
-fbl_fit &lt;- vic_cafe %&gt;%
->>>>>>> Stashed changes
+fbl_cafe_fit &lt;- vic_cafe %&gt;%
   fable::ETS(Turnover ~ season("M"))
 ```
 
@@ -394,11 +390,7 @@ specials not specified (error(), trend()) are automatically chosen to be "M" and
 .flex-col[
 
 ```r
-<<<<<<< Updated upstream
-fc_cafe_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;% 
-=======
 fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
->>>>>>> Stashed changes
   forecast::ets("ZZM")
 ```
 
@@ -516,23 +508,15 @@ elecdemand is strongly driven by temperature
 ```r
 tsbl_elec &lt;- tsibbledata::elecdemand %&gt;% filter(index &lt; ymd("2014-03-01"))
 fbl_elec_fit &lt;- tsbl_elec %&gt;%
-<<<<<<< Updated upstream
-  fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") + 
-=======
-  fable::ARIMA(Demand ~ pdq(3,0,2) + PDQ(1,1,1, period = "day") +
->>>>>>> Stashed changes
-               WorkDay + Temperature + I(Temperature^2))
+  fable::ARIMA(Demand ~ WorkDay + Temperature + I(Temperature^2) +
+               pdq(1,0,1) + PDQ(1,1,1, period = "day"))
 ```
 
 ```
 #&gt; # A mable: 1 model
 #&gt;   model                               
 #&gt;   &lt;model&gt;                             
-<<<<<<< Updated upstream
 #&gt; 1 LM w/ ARIMA(1,0,1)(1,1,1)[48] errors
-=======
-#&gt; 1 LM w/ ARIMA(3,0,2)(1,1,1)[48] errors
->>>>>>> Stashed changes
 ```
 
 ]
@@ -554,21 +538,14 @@ brief note about pdq being non-seasonal and PDQ being seasonal
 
 ```r
 ts_elec &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
-<<<<<<< Updated upstream
-fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;% 
-  forecast::Arima(order = c(1,0,1), seasonal = c(1,1,1),
-                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")], 
-=======
 fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;%
-    forecast::Arima(order = c(3,0,2), seasonal=c(1,1,1),
-             xreg = cbind(ts_elec[,c("WorkDay", "Temperature")],
->>>>>>> Stashed changes
+  forecast::Arima(order = c(1,0,1), seasonal = c(1,1,1),
+                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")],
                                ts_elec[,"Temperature"]^2))
 ```
 
 ```
 #&gt; Series: . 
-<<<<<<< Updated upstream
 #&gt; Regression with ARIMA(1,0,1)(1,1,1)[48] errors 
 #&gt; 
 #&gt; Coefficients:
@@ -581,20 +558,6 @@ fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;%
 #&gt; 
 #&gt; sigma^2 estimated as 0.002339:  log likelihood=4454.81
 #&gt; AIC=-8893.61   AICc=-8893.56   BIC=-8846.16
-=======
-#&gt; Regression with ARIMA(3,0,2)(1,1,1)[48] errors 
-#&gt; 
-#&gt; Coefficients:
-#&gt;          ar1      ar2     ar3      ma1     ma2    sar1     sma1  ts_elec[, c("WorkDay", "Temperature")].WorkDay
-#&gt;       2.1742  -1.4658  0.2870  -0.2294  0.0104  0.2371  -0.8812                                          0.0023
-#&gt; s.e.  0.6095   1.1261  0.5207   0.6097  0.0696  0.0221   0.0107                                          0.0055
-#&gt;       ts_elec[, c("WorkDay", "Temperature")].Temperature  ts_elec[, "Temperature"]^2
-#&gt;                                                  -0.0025                       1e-04
-#&gt; s.e.                                                 NaN                       0e+00
-#&gt; 
-#&gt; sigma^2 estimated as 0.00118:  log likelihood=5410.14
-#&gt; AIC=-10798.28   AICc=-10798.19   BIC=-10733.03
->>>>>>> Stashed changes
 ```
 ]
 ]
@@ -752,17 +715,10 @@ these components are particularly interesting to plot
 # Extract model components (fable::components)
 
 ```r
-<<<<<<< Updated upstream
-components(fbl_cafe_fit) %&gt;% 
-  gather(component, value, level, slope, season) %&gt;% 
-  ggplot(aes(x = Month, y = value)) + 
-  geom_line() + 
-=======
-components(fbl_fit) %&gt;%
+components(fbl_cafe_fit) %&gt;%
   gather(component, value, level, slope, season) %&gt;%
   ggplot(aes(x = Month, y = value)) +
   geom_line() +
->>>>>>> Stashed changes
   facet_grid(vars(component), scales = "free_y")
 ```
 
@@ -828,7 +784,7 @@ quickly here!
 .flex-col[
 
 ```r
-fc_cafe_fc &lt;- fc_cafe_fit %&gt;% forecast(h=24)
+fc_fc &lt;- fc_fit %&gt;% forecast(h=24)
 ```
 
 ```
@@ -890,15 +846,9 @@ fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
 #&gt; # A fable: 624 x 3 [30m]
 #&gt;    index               Demand .distribution     
 #&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;            
-<<<<<<< Updated upstream
 #&gt;  1 2014-03-01 00:00:00   3.99 N(4, sd = 0.048)  
 #&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.096)
 #&gt;  3 2014-03-01 01:00:00   3.60 N(3.6, sd = 0.13) 
-=======
-#&gt;  1 2014-03-01 00:00:00   4.00 N(4, sd = 0.034)  
-#&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.075)
-#&gt;  3 2014-03-01 01:00:00   3.59 N(3.6, sd = 0.12) 
->>>>>>> Stashed changes
 ...
 ```
 ]
@@ -925,7 +875,6 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 
 ```
 ...
-<<<<<<< Updated upstream
 #&gt;          Point Forecast    Lo 80    Hi 80     Lo 95    Hi 95
 #&gt; 60.00000       3.988066 3.926087 4.050045 3.8932776 4.082855
 #&gt; 60.02083       3.749454 3.626331 3.872578 3.5611538 3.937755
@@ -934,16 +883,6 @@ fc_elec_fc &lt;- fc_elec_fit %&gt;%
 #&gt; 60.08333       3.372009 3.151901 3.592117 3.0353826 3.708635
 #&gt; 60.10417       3.318911 3.075343 3.562479 2.9464058 3.691416
 #&gt; 60.12500       3.310711 3.045955 3.575468 2.9058013 3.715621
-=======
-#&gt;          Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
-#&gt; 60.00000       3.997128 3.953106 4.041150 3.929802 4.064454
-#&gt; 60.02083       3.748670 3.652399 3.844941 3.601436 3.895904
-#&gt; 60.04167       3.586962 3.431488 3.742436 3.349185 3.824739
-#&gt; 60.06250       3.450572 3.232735 3.668410 3.117419 3.783726
-#&gt; 60.08333       3.353915 3.072995 3.634835 2.924284 3.783546
-#&gt; 60.10417       3.296645 2.953500 3.639790 2.771850 3.821440
-#&gt; 60.12500       3.285498 2.882013 3.688984 2.668420 3.902577
->>>>>>> Stashed changes
 ...
 ```
 ]
@@ -1024,7 +963,7 @@ quickly
 .flex-col[
 
 ```r
-fc_cafe_fit %&gt;% forecast::accuracy()
+fc_fit %&gt;% forecast::accuracy()
 ```
 
 ```
@@ -1054,11 +993,7 @@ fbl_elec_fc %&gt;% accuracy(tsbl_elec_new)
 #&gt; # A tibble: 1 x 7
 #&gt;   Type       ME  RMSE   MAE   MPE  MAPE  ACF1
 #&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
-<<<<<<< Updated upstream
 #&gt; 1 Test  -0.0655 0.505 0.366 -2.54  8.14 0.992
-=======
-#&gt; 1 Test  -0.0382 0.505 0.359 -2.01  7.95 0.992
->>>>>>> Stashed changes
 ```
 ]
 ]
@@ -1076,9 +1011,9 @@ fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
 ```
 
 ```
-#&gt;                        ME       RMSE        MAE         MPE      MAPE       MASE      ACF1 Theil's U
-#&gt; Training set  0.000352514 0.04789049 0.03483026  0.01553156 0.7183844 0.05865179 0.4352692        NA
-#&gt; Test set     -0.065460770 0.50458482 0.36563548 -2.53964478 8.1384634 0.61570527 0.9924566  3.319844
+#&gt;                        ME       RMSE        MAE        MPE      MAPE       MASE        ACF1 Theil's U
+#&gt; Training set 5.388019e-05 0.03540232 0.02590156 0.01497925 0.5509356 0.04361646 0.007303311        NA
+#&gt; Test set     2.302582e-01 0.57995358 0.46591641 3.92470129 9.9612025 0.78457153 0.992901516  3.456586
 ```
 ]
 ]
@@ -1149,11 +1084,7 @@ if only we could forecast them all?
 
 
 ```r
-<<<<<<< Updated upstream
-retail_ets &lt;- tsibbledata::ausretail %&gt;% 
-=======
-all_ets &lt;- tsibbledata::ausretail %&gt;%
->>>>>>> Stashed changes
+retail_ets &lt;- tsibbledata::ausretail %&gt;%
   ETS(Turnover)
 ```
 
@@ -1313,15 +1244,9 @@ this is particularly interesting to visualise
 
 
 ```r
-<<<<<<< Updated upstream
-components(retail_ets) %&gt;% 
-  filter(Industry == "Cafes, restaurants and takeaway food services") %&gt;% 
-  ggplot(aes(x = Month, y = level, colour = State)) + 
-=======
-components(all_ets) %&gt;%
+components(retail_ets) %&gt;%
   filter(Industry == "Cafes, restaurants and takeaway food services") %&gt;%
   ggplot(aes(x = Month, y = level, colour = State)) +
->>>>>>> Stashed changes
   geom_line()
 ```
 
@@ -1338,11 +1263,7 @@ We can see without seasonality that NSW has highest turnover, followed by VIC.
 
 
 ```r
-<<<<<<< Updated upstream
-retail_fc &lt;- retail_ets %&gt;% 
-=======
-all_fc &lt;- all_ets %&gt;%
->>>>>>> Stashed changes
+retail_fc &lt;- retail_ets %&gt;%
   forecast(h=24)
 ```
 
@@ -1587,11 +1508,7 @@ All of the code/examples presented here is implemented and usable.
 
 
 ```r
-<<<<<<< Updated upstream
-vic_cafe_sim &lt;- fbl_cafe_fit %&gt;% 
-=======
-vic_cafe_sim &lt;- fbl_fit %&gt;%
->>>>>>> Stashed changes
+vic_cafe_sim &lt;- fbl_cafe_fit %&gt;%
   simulate(h = 24, times = 5)
 ```
 
@@ -1600,18 +1517,6 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 #&gt; # Key:       .rep, State, Industry [5]
 #&gt;    State    Industry                                         Month  .rep  .sim
 #&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;int&gt; &lt;dbl&gt;
-<<<<<<< Updated upstream
-#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  945.
-#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  924.
-#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1079.
-#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1  917.
-#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1  861.
-#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1  898.
-#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1  872.
-#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  852.
-#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  915.
-#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  922.
-=======
 #&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  976.
 #&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  938.
 #&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1127.
@@ -1622,7 +1527,6 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 #&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  950.
 #&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  857.
 #&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  977.
->>>>>>> Stashed changes
 #&gt; # ... with 110 more rows
 ```
 
@@ -1882,7 +1786,7 @@ fbl_elec_fc %&gt;%
 #&gt; # A tibble: 1 x 3
 #&gt;   Type  winkler percentile
 #&gt;   &lt;chr&gt;   &lt;dbl&gt;      &lt;dbl&gt;
-#&gt; 1 Test     3.87      0.166
+#&gt; 1 Test     4.97      0.197
 ```
 
 ???

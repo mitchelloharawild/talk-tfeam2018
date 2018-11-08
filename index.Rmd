@@ -506,8 +506,8 @@ elecdemand is strongly driven by temperature
 ```{r arima-fit, echo = TRUE}
 tsbl_elec <- tsibbledata::elecdemand %>% filter(index < ymd("2014-03-01"))
 fbl_elec_fit <- tsbl_elec %>%
-  fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") +
-               WorkDay + Temperature + I(Temperature^2))
+  fable::ARIMA(Demand ~ WorkDay + Temperature + I(Temperature^2) +
+               pdq(1,0,1) + PDQ(1,1,1, period = "day"))
 ```
 ```{r arima-fit-print, dependson='arima-fit'}
 fbl_elec_fit
