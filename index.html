@@ -1159,7 +1159,7 @@ class: inverse
 
 ---
 
-## Simulating future paths (`simulate()`)
+## `simulate()` future paths
 
 
 ```r
@@ -1187,7 +1187,7 @@ vic_cafe_sim &lt;- fbl_fit %&gt;%
 
 ---
 
-## Simulating future paths (`simulate()`)
+## `simulate()` future paths
 
 
 ```r
@@ -1201,7 +1201,7 @@ vic_cafe %&gt;%
 
 ---
 
-## Interpolating missing values (`interpolate()`)
+## `interpolate()` missing values
 
 .float-left[
 
@@ -1236,7 +1236,7 @@ tsibbledata::olympic_running
 
 ---
 
-## Interpolating missing values (`interpolate()`)
+## `interpolate()` missing values
 
 .float-left[
 
@@ -1271,7 +1271,18 @@ olympic_complete &lt;- olympic_running %&gt;%
 
 ---
 
-# refit() and stream()
+# `refit()` and `stream()` new data
+
+&lt;img src="figure/stream-data-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+???
+
+`refit()` allows a model to be applied to a new dataset.
+
+`stream()` allows a model to be extended using new data.
+
+Models parameters can be re-estimated (could be time consuming) or not.
 
 ---
 
@@ -1279,7 +1290,7 @@ olympic_complete &lt;- olympic_running %&gt;%
 
 ---
 
-# Reconciliation
+# Forecast reconciliation
 
 ---
 

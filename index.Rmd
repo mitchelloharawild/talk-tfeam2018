@@ -859,7 +859,7 @@ class: inverse
 
 ---
 
-## Simulating future paths (`simulate()`)
+## `simulate()` future paths
 
 ```{r vic-cafe-sim, echo = TRUE}
 vic_cafe_sim <- fbl_fit %>% 
@@ -871,7 +871,7 @@ vic_cafe_sim
 
 ---
 
-## Simulating future paths (`simulate()`)
+## `simulate()` future paths
 
 ```{r vic-cafe-sim-plot, echo = TRUE}
 vic_cafe %>% 
@@ -882,7 +882,7 @@ vic_cafe %>%
 
 ---
 
-## Interpolating missing values (`interpolate()`)
+## `interpolate()` missing values
 
 .float-left[
 ```{r olympic-running, echo = TRUE}
@@ -909,7 +909,7 @@ olympic_running %>%
 
 ---
 
-## Interpolating missing values (`interpolate()`)
+## `interpolate()` missing values
 
 .float-left[
 ```{r olympic-interpolated, echo = TRUE}
@@ -939,7 +939,28 @@ olympic_running %>%
 
 ---
 
-# refit() and stream()
+# `refit()` and `stream()` new data
+
+```{r, stream-data}
+tsbl_elec %>% 
+  ggplot(aes(x = index, y = Demand)) +
+  geom_line(aes(colour = "Model data")) + 
+  geom_line(aes(colour = "Streaming data"), data = tsbl_elec_new) + 
+  xlab(NULL) + 
+  ylab("Electricity Demanded (GW)") + 
+  scale_colour_brewer(palette = "Dark2") + 
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
+
+???
+
+`refit()` allows a model to be applied to a new dataset.
+
+`stream()` allows a model to be extended using new data.
+
+Models parameters can be re-estimated (could be time consuming) or not.
 
 ---
 
@@ -947,7 +968,7 @@ olympic_running %>%
 
 ---
 
-# Reconciliation
+# Forecast reconciliation
 
 ---
 
