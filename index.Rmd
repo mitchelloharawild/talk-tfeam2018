@@ -34,7 +34,7 @@ library(fable)
 
 opts_chunk$set(
   echo = FALSE, warning = FALSE, message = FALSE, comment = "#>",
-  fig.path = 'figure/', cache.path = 'cache/', fig.align = 'center', 
+  fig.path = 'figure/', cache.path = 'cache/', fig.align = 'center',
   fig.width = 12, fig.height = 4, fig.show = 'hold',
   cache = TRUE, external = TRUE, dev = 'svglite', dev.args = list(bg = "transparent")
 )
@@ -71,7 +71,7 @@ knit_hooks$set(output = function(x, options) {
  })
 
 theme_set(
-  theme_grey(base_size = 16) + 
+  theme_grey(base_size = 16) +
   theme(
     legend.position = "bottom",
     plot.background = element_rect(fill = "transparent"),
@@ -212,13 +212,13 @@ Features:
 ## Victorian cafe and restaurant turnover
 
 ```{r, echo=TRUE}
-vic_cafe <- tsibbledata::ausretail %>% 
+vic_cafe <- tsibbledata::ausretail %>%
   filter(State == "Victoria", Industry == "Cafes, restaurants and takeaway food services")
 ```
 ```{r cafe-plot}
-vic_cafe %>% 
-  autoplot(Turnover) + 
-  ggtitle("Victorian cafe, restaurant and takeaway turnover") + 
+vic_cafe %>%
+  autoplot(Turnover) +
+  ggtitle("Victorian cafe, restaurant and takeaway turnover") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -228,7 +228,7 @@ Focus on Victorian cafes and restaurants (why? vic loves coffee + food)
 Detail patterns in data (trend, multiplicative seasonality, noise)
 ---
 
-## A more common/realistic example
+## Half-hourly electricity demand data
 
 ```{r elecdemand, echo = TRUE}
 tsibbledata::elecdemand
@@ -390,11 +390,11 @@ discuss with reference to the example formula above
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fit, echo = TRUE}
-fbl_cafe_fit <- vic_cafe %>% 
+fbl_fit <- vic_cafe %>%
   fable::ETS(Turnover ~ season("M"))
 ```
-```{r ets-fit-print}
-fbl_cafe_fit
+```{r ets-fit-print, dependson='ets-fit'}
+fbl_fit
 ```
 
 
@@ -415,11 +415,11 @@ specials not specified (error(), trend()) are automatically chosen to be "M" and
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r ets-fc-fit, echo = TRUE}
-fc_cafe_fit <- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+fc_fit <- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>%
   forecast::ets("ZZM")
 ```
-```{r ets-fc-fit-print, output.lines = 1:10}
-fc_cafe_fit
+```{r ets-fc-fit-print, output.lines = 1:10, dependson='etc-fc-fit'}
+fc_fit
 ```
 
 ]
@@ -428,7 +428,7 @@ fc_cafe_fit
 ???
 
 here's the same model in forecast would be produced
-notice the unnatural interface for creating a `ts`! 
+notice the unnatural interface for creating a `ts`!
 
 This is frustrating when your data already contains a time column and is prone to errors!
 What is your data had missing values? gaps? ahh!
@@ -441,7 +441,7 @@ What is your data had missing values? gaps? ahh!
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
 ```{r ets-fit-log, echo = TRUE}
-vic_cafe %>% 
+vic_cafe %>%
   fable::ETS(log(Turnover) ~ season("A"))
 ```
 
@@ -462,7 +462,7 @@ note that we now want additive seasonality as logs of multiplicative components 
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
 ```{r ets-fc-fit-log, echo = TRUE, output.lines = 1:10}
-ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>% 
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %>%
   forecast::ets("ZZA", lambda = 0)
 ```
 ]
@@ -481,13 +481,13 @@ fable also supports combinations transformations, such as log(Turnover + 1) for 
 ```{r elecdemand-xreg, fig.height=5}
 tsibbledata::elecdemand %>%
   gather("Series", "Value", Demand, Temperature) %>%
-  mutate(Series = recode(Series, "Demand" = "Demand (GW)", "Temperature" = "Temperature (C)")) %>% 
+  mutate(Series = recode(Series, "Demand" = "Demand (GW)", "Temperature" = "Temperature (C)")) %>%
   ggplot(aes(x=index, y=Value, group=Series)) +
   geom_line() +
-  facet_grid(Series ~ ., scales = "free_y") + 
+  facet_grid(Series ~ ., scales = "free_y") +
   xlab("Date") +
   ylab(NULL) +
-  ggtitle("Electricity demanded and temperature") + 
+  ggtitle("Electricity demanded and temperature") +
   geom_smooth()
 ```
 
@@ -509,7 +509,7 @@ fbl_elec_fit <- tsbl_elec %>%
   fable::ARIMA(Demand ~ pdq(1,0,1) + PDQ(1,1,1, period = "day") + 
                WorkDay + Temperature + I(Temperature^2))
 ```
-```{r arima-fit-print}
+```{r arima-fit-print, dependson='arima-fit'}
 fbl_elec_fit
 ```
 
@@ -536,7 +536,7 @@ fc_elec_fit <- ts_elec[,"Demand"] %>%
                   xreg = cbind(ts_elec[,c("WorkDay", "Temperature")], 
                                ts_elec[,"Temperature"]^2))
 ```
-```{r arima-fc-fit-print}
+```{r arima-fc-fit-print, dependson='arima-fc-fit'}
 fc_elec_fit
 ```
 ]
@@ -578,8 +578,8 @@ fable introduces the components verb which extracts model components (such as st
 
 # Augment tsibble with model fits (broom::augment)
 
-```{r ets-augment, echo = TRUE}
-augment(fbl_cafe_fit)
+```{r ets-augment, echo = TRUE, dependson='ets-fit'}
+augment(fbl_fit)
 ```
 
 ???
@@ -590,8 +590,8 @@ adds fitted model information to the model data
 
 # Tidy model parameters (broom::tidy)
 
-```{r ets-tidy, echo = TRUE}
-tidy(fbl_cafe_fit)
+```{r ets-tidy, echo = TRUE, dependson='ets-fit'}
+tidy(fbl_fit)
 ```
 
 ???
@@ -601,8 +601,8 @@ accesses model coefficients in a tidy format
 ---
 
 # Glance a one-row model summary (broom::glance)
-```{r ets-glance, echo = TRUE}
-glance(fbl_cafe_fit)
+```{r ets-glance, echo = TRUE, dependson='ets-fit'}
+glance(fbl_fit)
 ```
 
 ???
@@ -612,8 +612,8 @@ reveals useful model diagnostics such as AIC, sigma, etc.
 ---
 
 # Extract model components (fable::components)
-```{r ets-components, echo = TRUE}
-components(fbl_cafe_fit)
+```{r ets-components, echo = TRUE, dependson='ets-fit'}
+components(fbl_fit)
 ```
 
 ???
@@ -623,11 +623,11 @@ these components are particularly interesting to plot
 ---
 
 # Extract model components (fable::components)
-```{r ets-components-plot, echo = TRUE}
-components(fbl_cafe_fit) %>% 
-  gather(component, value, level, slope, season) %>% 
-  ggplot(aes(x = Month, y = value)) + 
-  geom_line() + 
+```{r ets-components-plot, echo = TRUE, dependson='ets-fit'}
+components(fbl_fit) %>%
+  gather(component, value, level, slope, season) %>%
+  ggplot(aes(x = Month, y = value)) +
+  geom_line() +
   facet_grid(vars(component), scales = "free_y")
 ```
 
@@ -658,11 +658,11 @@ Can use either new_data or h, h is easier, new_data is more precise and supports
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r ets-fc-log, echo = TRUE}
-fbl_cafe_fc <- fbl_cafe_fit %>% forecast(h=24)
+```{r ets-fc-log, echo = TRUE, dependson='ets-fit'}
+fbl_fc <- fbl_fit %>% forecast(h=24)
 ```
-```{r ets-fc-log-print, output.lines = 1:8}
-fbl_cafe_fc
+```{r ets-fc-log-print, output.lines = 1:8, dependson='ets-fc-log'}
+fbl_fc
 ```
 ]
 ]
@@ -678,11 +678,11 @@ quickly here!
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r ets-fc-fc-log, echo = TRUE}
-fc_cafe_fc <- fc_cafe_fit %>% forecast(h=24)
+```{r ets-fc-fc-log, echo = TRUE, dependson='ets-fc'}
+fc_fc <- fc_fit %>% forecast(h=24)
 ```
-```{r ets-fc-fc-log-print, output.lines = 1:8}
-fc_cafe_fc
+```{r ets-fc-fc-log-print, output.lines = 1:8, dependson='ets-fc-fc-log'}
+fc_fc
 ```
 ]
 ]
@@ -715,13 +715,13 @@ Forecasts look reasonable.
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r arima-fc, echo = TRUE}
-tsbl_elec_new <- tsibbledata::elecdemand %>% 
+```{r arima-fc, echo = TRUE, dependson='arima-fit'}
+tsbl_elec_new <- tsibbledata::elecdemand %>%
   filter(index >= ymd("2014-03-01"), index < ymd("2014-03-14"))
-fbl_elec_fc <- fbl_elec_fit %>% 
+fbl_elec_fc <- fbl_elec_fit %>%
   forecast(tsbl_elec_new)
 ```
-```{r arima-fc-print, output.lines = 1:6}
+```{r arima-fc-print, output.lines = 1:6, dependson='arima-fc'}
 fbl_elec_fc
 ```
 ]
@@ -738,13 +738,13 @@ Forecasting with new data is easy in fable, just provide a tsibble that contains
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r arima-fc-fc, echo = TRUE}
+```{r arima-fc-fc, echo = TRUE, dependson='arima-fc-fit'}
 ts_elec_new <- ts(fpp2::elecdemand[2833:3456,], start = 60, frequency = 48)
-fc_elec_fc <- fc_elec_fit %>% 
+fc_elec_fc <- fc_elec_fit %>%
   forecast:::forecast.Arima(h=24, xreg = cbind(
     ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
 ```
-```{r arima-fc-fc-print, output.lines = 1:8}
+```{r arima-fc-fc-print, output.lines = 1:8, dependson='arima-fc-fc'}
 fc_elec_fc
 ```
 ]
@@ -759,13 +759,25 @@ Also note the time output in forecast vs fable! So many decimals!
 
 ## Producing forecasts with new data
 
-```{r arima-fc-plot, echo = TRUE}
+```{r arima-fc-plot, echo = TRUE, dependson='arima-fc'}
 fbl_elec_fc %>% autoplot(tsbl_elec)
 ```
 
 ???
 
 again, need to show the plot!
+
+---
+
+## Producing forecasts with new data
+
+```{r arima-fc-fc-plot, echo = TRUE, dependson='arima-fc-fc'}
+fc_elec_fc %>% autoplot()
+```
+
+???
+
+look at the axis, source of many questions/complaints.
 
 ---
 class: inverse
@@ -795,8 +807,8 @@ Meaning you can remove measures you don't want, add the ones you do, and even sp
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r ets-accuracy-log, echo = TRUE}
-fbl_cafe_fit %>% accuracy()
+```{r ets-accuracy-log, echo = TRUE, dependson='ets-fit'}
+fbl_fit %>% accuracy()
 ```
 ]
 ]
@@ -811,8 +823,8 @@ quickly
 .flex-row[
 .sticker-left[![forecast](resources/forecast.svg)]
 .flex-col[
-```{r ets-fc-accuracy-log, echo = TRUE}
-fc_cafe_fit %>% forecast::accuracy()
+```{r ets-fc-accuracy-log, echo = TRUE, dependson='ets-fc-fit'}
+fc_fit %>% forecast::accuracy()
 ```
 ]
 ]
@@ -828,7 +840,7 @@ fable keeps contextual information from the keys
 .flex-row[
 .sticker-left[![fable](resources/fable.svg)]
 .flex-col[
-```{r arima-fc-accuracy, echo = TRUE}
+```{r arima-fc-accuracy, echo = TRUE, dependson='arima-fc'}
 fbl_elec_fc %>% accuracy(tsbl_elec_new)
 ```
 ]
@@ -884,7 +896,7 @@ if only we could forecast them all?
 # Estimate
 
 ```{r batch-ets, echo = TRUE}
-retail_ets <- tsibbledata::ausretail %>% 
+all_ets <- tsibbledata::ausretail %>%
   ETS(Turnover)
 ```
 ```{r batch-ets-print}
@@ -954,9 +966,9 @@ this is particularly interesting to visualise
 # Extract (fable::components)
 
 ```{r batch-components-plot, echo = TRUE}
-components(retail_ets) %>% 
-  filter(Industry == "Cafes, restaurants and takeaway food services") %>% 
-  ggplot(aes(x = Month, y = level, colour = State)) + 
+components(all_ets) %>%
+  filter(Industry == "Cafes, restaurants and takeaway food services") %>%
+  ggplot(aes(x = Month, y = level, colour = State)) +
   geom_line()
 ```
 
@@ -970,7 +982,7 @@ We can see without seasonality that NSW has highest turnover, followed by VIC.
 # Forecast
 
 ```{r batch-fc, echo = TRUE}
-retail_fc <- retail_ets %>% 
+all_fc <- all_ets %>%
   forecast(h=24)
 ```
 ```{r batch-fc-print}
@@ -985,12 +997,12 @@ here we are forecasting 24 steps ahead from the last observation of each series
 
 ```{r batch-fc-plot, fig.height=7}
 tsibbledata::ausretail %>%
-  filter(year(Month) >= 2000) %>% 
-  ggplot(aes(x=Month, y=Turnover, colour = State)) + 
-  geom_line() + 
-  facet_wrap(~ Industry, scales = "free_y") + 
-  geom_forecast(aes(ymin = lower, ymax = upper, level = level), 
-                fortify(retail_fc) %>% filter(year(Month) >= 2000), stat = "identity") +
+  filter(year(Month) >= 2000) %>%
+  ggplot(aes(x=Month, y=Turnover, colour = State)) +
+  geom_line() +
+  facet_wrap(~ Industry, scales = "free_y") +
+  geom_forecast(aes(ymin = lower, ymax = upper, level = level),
+                fortify(all_fc) %>% filter(year(Month) >= 2000), stat = "identity") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -1004,12 +1016,12 @@ Very hard to see/visualise this many series, so let's focus on the cafe industry
 
 ```{r batch-fc-cafe-plot, fig.height=7}
 tsibbledata::ausretail %>%
-  filter(Industry == "Cafes, restaurants and takeaway food services") %>% 
-  ggplot(aes(x=Month, y=Turnover, colour = State)) + 
-  geom_line() + 
-  facet_wrap(~ Industry, scales = "free_y") + 
-  geom_forecast(aes(ymin = lower, ymax = upper, level = level), 
-                fortify(retail_fc) %>% filter(Industry == "Cafes, restaurants and takeaway food services"), stat = "identity") +
+  filter(Industry == "Cafes, restaurants and takeaway food services") %>%
+  ggplot(aes(x=Month, y=Turnover, colour = State)) +
+  geom_line() +
+  facet_wrap(~ Industry, scales = "free_y") +
+  geom_forecast(aes(ymin = lower, ymax = upper, level = level),
+                fortify(all_fc) %>% filter(Industry == "Cafes, restaurants and takeaway food services"), stat = "identity") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -1090,11 +1102,11 @@ this will be a very brief introduction - more details are available on GitHub an
 ## Switching seasonality
 
 ```{r fasster-noswitching, fig.height = 5.3}
-tsibbledata::elecdemand %>% 
+tsibbledata::elecdemand %>%
   filter(month(index) == 6) %>%
   ggplot(aes(x=index, y = Demand)) +
-  geom_line() + 
-  xlab("Time") + 
+  geom_line() +
+  xlab("Time") +
   ylab("Electricity Demanded (GW)")
 ```
 
@@ -1107,7 +1119,7 @@ here is the zoomed in electricity demand data
 ## Switching seasonality
 
 ```{r fasster-switching, fig.height = 6}
-tsibbledata::elecdemand %>% 
+tsibbledata::elecdemand %>%
   filter(month(index) == 6) %>%
   mutate(
     `Working Day` = ifelse(WorkDay == 1, Demand, NA),
@@ -1115,9 +1127,9 @@ tsibbledata::elecdemand %>%
   ) %>%
   gather("Day Type", "Demand", `Working Day`, `Non-working Day`) %>%
   ggplot(aes(x=index, y = Demand, colour = `Day Type`)) +
-  geom_line() + 
-  xlab("Time") + 
-  ylab("Electricity Demanded (GW)") + 
+  geom_line() +
+  xlab("Time") +
+  ylab("Electricity Demanded (GW)") +
   scale_colour_brewer(palette = "Dark2")
 ```
 
@@ -1132,7 +1144,7 @@ this pattern is common in most sub-daily time series, which are becoming more co
 
 # Forecasting with fasster
 
-```{r, fasster-elecfit, echo = TRUE}
+```{r, fasster-elecfit, echo = TRUE, dependson='arima-fit'}
 fasster_fit <- tsbl_elec %>%
   fasster(log(Demand) ~ WorkDay %S% (trig(48, 16) + poly(1)) + Temperature + I(Temperature^2))
 ```
@@ -1151,12 +1163,12 @@ I've also included Temperature and Temperature^2 as xregs
 
 --
 
-```{r fasster-elecfc, echo = TRUE}
-fasster_fc <- fasster_fit %>% 
+```{r fasster-elecfc, echo = TRUE, dependson='fasster-elecfit'}
+fasster_fc <- fasster_fit %>%
   forecast(tsbl_elec_new)
 ```
 
-```{r fasster-elecfc-print}
+```{r fasster-elecfc-print, dependson='fasster-elecfc'}
 fasster_fc
 ```
 
@@ -1167,8 +1179,8 @@ We get our fable as a result (note that the distribution is transformed!)
 ---
 
 # Forecasting with fasster
-```{r fasster-elecfc-plot, echo = TRUE}
-fasster_fc %>% 
+```{r fasster-elecfc-plot, echo = TRUE, dependson=c('fasster-elecfc','arima-fc')}
+fasster_fc %>%
   autoplot(tsbl_elec)
 ```
 
@@ -1194,11 +1206,11 @@ All of the code/examples presented here is implemented and usable.
 
 ## `simulate()` future paths
 
-```{r vic-cafe-sim, echo = TRUE}
-vic_cafe_sim <- fbl_cafe_fit %>% 
+```{r vic-cafe-sim, echo = TRUE, dependson='ets-fit'}
+vic_cafe_sim <- fbl_fit %>%
   simulate(h = 24, times = 5)
 ```
-```{r vic-cafe-sim-print}
+```{r vic-cafe-sim-print, dependson='vic-cafe-sim'}
 vic_cafe_sim
 ```
 
@@ -1212,9 +1224,9 @@ here we're using the vic_cafe ETS model and simulating 24 steps ahead 5 times
 ## `simulate()` future paths
 
 ```{r vic-cafe-sim-plot, echo = TRUE}
-vic_cafe %>% 
-  filter(year(Month) >= 2010) %>% 
-  autoplot(Turnover) + 
+vic_cafe %>%
+  filter(year(Month) >= 2010) %>%
+  autoplot(Turnover) +
   geom_line(aes(y = .sim, group = .rep), alpha = 0.3, data = vic_cafe_sim)
 ```
 
@@ -1240,9 +1252,9 @@ olympic_running %>%
   ggplot(aes(x=Year, y = Time, colour = Sex)) +
   geom_line() +
   geom_point(size = 1) +
-  facet_wrap(~ Length, scales = "free_y", ncol = 2) + 
-  theme_minimal() + 
-  scale_color_brewer(palette = "Dark2") + 
+  facet_wrap(~ Length, scales = "free_y", ncol = 2) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   ylab("Running time (seconds)")
 ```
@@ -1264,25 +1276,25 @@ The data has missing values in 1916, 1940, and 1944 due to the world wars.
 
 .float-left[
 ```{r olympic-interpolated, echo = TRUE}
-olympic_complete <- olympic_running %>% 
-  TSLM(Time ~ trend()) %>% 
+olympic_complete <- olympic_running %>%
+  TSLM(Time ~ trend()) %>%
   interpolate(olympic_running)
 ```
-```{r olympic-interpolated-print, echo = FALSE}
+```{r olympic-interpolated-print, echo = FALSE, dependson='olympic-interpolated'}
 olympic_complete
 ```
 ]
 
 .plot-right-absolute[
-```{r olympic-running-completed, fig.width = 9, fig.height = 6}
+```{r olympic-running-completed, fig.width = 9, fig.height = 6, dependson='olympic-interpolated'}
 olympic_running %>%
   ggplot(aes(x=Year, y = Time, colour = Sex)) +
   geom_line(aes(linetype = "Interpolated"), data = olympic_complete) +
   geom_line(aes(linetype = "Actual")) +
   geom_point(size = 1) +
-  facet_wrap(~ Length, scales = "free_y", ncol = 2) + 
-  theme_minimal() + 
-  scale_color_brewer(palette = "Dark2") + 
+  facet_wrap(~ Length, scales = "free_y", ncol = 2) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   ylab("Running time (seconds)")
 ```
@@ -1318,14 +1330,14 @@ fasster_fc
 ```
 
 ```{r fasster-fc-recall-plot}
-tsbl_elec_newer <- tsibbledata::elecdemand %>% 
+tsbl_elec_newer <- tsibbledata::elecdemand %>%
   filter(index >= ymd("2014-03-14"), index < ymd("2014-04-01"))
 fasster_fc %>% autoplot(tsbl_elec) +
-  xlab(NULL) + 
-  ylab("Electricity Demanded (GW)") + 
+  xlab(NULL) +
+  ylab("Electricity Demanded (GW)") +
   theme_minimal() +
-  theme(legend.position = "bottom", legend.title = element_blank()) + 
-  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) +
   ylim(c(1.95, 9.75))
 ```
 
@@ -1342,16 +1354,16 @@ tsbl_elec_new
 ```
 
 ```{r stream-data}
-tsbl_elec %>% 
+tsbl_elec %>%
   ggplot(aes(x = index, y = Demand)) +
-  geom_line(aes(colour = "Model data")) + 
-  geom_line(aes(colour = "Streaming data"), data = tsbl_elec_new) + 
-  xlab(NULL) + 
-  ylab("Electricity Demanded (GW)") + 
-  scale_colour_brewer(palette = "Dark2") + 
+  geom_line(aes(colour = "Model data")) +
+  geom_line(aes(colour = "Streaming data"), data = tsbl_elec_new) +
+  xlab(NULL) +
+  ylab("Electricity Demanded (GW)") +
+  scale_colour_brewer(palette = "Dark2") +
   theme_minimal() +
-  theme(legend.position = "bottom", legend.title = element_blank()) + 
-  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  xlim(c(min(tsbl_elec$index), max(tsbl_elec_newer$index))) +
   ylim(c(1.95, 9.75))
 ```
 
@@ -1369,13 +1381,13 @@ fasster_stream <- fasster_fit %>% stream(tsbl_elec_new)
 ```
 
 ```{r fasster-stream-fc-plot}
-fasster_stream %>% 
-  forecast(tsbl_elec_newer) %>% 
-  autoplot(rbind(tsbl_elec, tsbl_elec_new)) + 
-  xlab(NULL) + 
-  ylab("Electricity Demanded (GW)") + 
+fasster_stream %>%
+  forecast(tsbl_elec_newer) %>%
+  autoplot(rbind(tsbl_elec, tsbl_elec_new)) +
+  xlab(NULL) +
+  ylab("Electricity Demanded (GW)") +
   theme_minimal() +
-  theme(legend.position = "bottom", legend.title = element_blank()) + 
+  theme(legend.position = "bottom", legend.title = element_blank()) +
   ylim(c(1.95, 9.75))
 ```
 
@@ -1389,7 +1401,7 @@ using stream(), we update the fitted model to include the new data, without need
 
 ```{r stl-decomposition, echo = TRUE}
 library(tsibblestats)
-cafe_dcmp <- vic_cafe %>% 
+cafe_dcmp <- vic_cafe %>%
   STL(log(Turnover))
 ```
 
@@ -1411,12 +1423,12 @@ the dable knows how to recombine components to get the original forecast
 # Decomposition forecasting
 
 ```{r stl-decomposition-plot, fig.height=5.5}
-cafe_dcmp %>% 
-  gather(component, value, trend, season_year, remainder) %>% 
-  ggplot(aes(x = Month, y = value)) + 
-  geom_line() + 
-  facet_grid(fct_rev(component) ~ ., scales = "free_y") + 
-  ggtitle("Victorian cafe, restaurant and takeaway turnover") + 
+cafe_dcmp %>%
+  gather(component, value, trend, season_year, remainder) %>%
+  ggplot(aes(x = Month, y = value)) +
+  geom_line() +
+  facet_grid(fct_rev(component) ~ ., scales = "free_y") +
+  ggtitle("Victorian cafe, restaurant and takeaway turnover") +
   ylab("Turnover ($Million AUD)")
 ```
 
@@ -1448,10 +1460,10 @@ Currently two measures are supported, winker's for interval accuracy and percent
 
 # Interval and distribution accuracy
 
-```{r accuracy-new, echo = TRUE}
-fbl_elec_fc %>% 
+```{r accuracy-new, echo = TRUE, dependson='arima-fc'}
+fbl_elec_fc %>%
   accuracy(
-    new_data = tsbl_elec_new, 
+    new_data = tsbl_elec_new,
     measures = list(winkler = winkler_score, percentile = percentile_score)
   )
 ```
