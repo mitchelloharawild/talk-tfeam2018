@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>fable::TFEAM</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Mitchell O’Hara-Wild" />
+    <link rel="stylesheet" href="./libs/slides.css" type="text/css" />
+    <link rel="stylesheet" href="./libs/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: inverse
+
+
+
+.title[fable]
+.sticker-float[![fable](resources/fable.svg)]
+
+## Tidy forecasting in R
+
+.bottom[
+### Mitchell O'Hara-Wild (&lt;svg style="height:0.8em;top:.04em;position:relative;fill:#1da1f2;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt;[@mitchoharawild](https://twitter.com/mitchoharawild))
+### Rob Hyndman (&lt;svg style="height:0.8em;top:.04em;position:relative;fill:#1da1f2;" viewBox="0 0 512 512"&gt;&lt;path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/&gt;&lt;/svg&gt;[@robjhyndman](https://twitter.com/robjhyndman/))
+### 8 November 2018
+### Slides @ [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
+]
+
+---
+class: center
+
+.animated.fadeIn[
+## Time-series data is changing
+
+&lt;hr&gt;
+]
+
+???
+
+Before - annual/quarterly/monthly data was common
+Now - daily/hourly/etc is common, which complicates analysis
+
+---
+class: center
+
+## Time-series data is changing
+
+&lt;hr&gt;
+
+.animated.fadeIn[
+.pull-left[
+### Multiple seasonality
+### Irregular time intervals
+### Frequent observations
+]
+.pull-right[
+### Many variables and series
+### Missing values
+### Additional noise
+]
+
+&lt;hr&gt;
+
+]
+
+
+---
+class: center
+
+## Time-series data is changing
+
+&lt;hr&gt;
+
+.pull-left[
+### Multiple seasonality
+### Irregular time intervals
+### Frequent observations
+]
+.pull-right[
+### Many variables and series
+### Missing values
+### Additional noise
+]
+
+&lt;hr&gt;
+
+.animated.fadeIn[
+## New tools are needed
+.sticker[![tsibble](resources/tsibble.svg)]
+.sticker[![fable](resources/fable.svg)]
+.sticker[![fasster](resources/fasster.png)]
+]
+
+???
+
+Outline talk structure, a bit on tsibble, mostly about fable, and a bit on fasster
+
+---
+
+class: inverse, top
+
+.sticker-float[![tsibble](resources/tsibble.svg)]
+
+.title[tsibble]
+
+* A modern temporal data structure
+* Provides tools for time-related analysis
+* Integrates seamlessly with the tidyverse
+
+&lt;br&gt;
+
+More information:
+
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/tsibble](https://github.com/tidyverts/tsibble)
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"/&gt;&lt;/svg&gt; [tsibble site](https://pkg.earo.me/tsibble/)
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [NY Meetup](http://slides.earo.me/bigapple/) &amp; [useR!2018](http://slides.earo.me/useR18/)
+
+???
+
+tsibble is the base for fable, providing a modern data structure for time series.
+Note that a whole talk can be (and has been) made just about tsibble!
+Check the links for more details
+
+---
+
+## A simple example
+
+
+```r
+tsibbledata::ausretail
+```
+
+```
+#&gt; # A tsibble: 64,088 x 5 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State                        Industry                                 `Series ID`    Month Turnover
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;          &lt;mth&gt;    &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Apr      4.4
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 May      3.4
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jun      3.6
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jul      4  
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Aug      3.6
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Sep      4.2
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Oct      4.8
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Nov      5.4
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Dec      6.9
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
+#&gt; # ... with 64,078 more rows
+```
+
+.footnote[Source: Australian Bureau of Statistics. Catalogue No. 8501.0]
+
+???
+
+Features:
+
+* Monthly observations
+* One response variable
+* &gt;64,000 rows
+* Turnover in $M AUD
+* 152 individual series (by State and Industry)
+
+---
+
+## Victorian cafe and restaurant turnover
+
+
+```r
+vic_cafe &lt;- tsibbledata::ausretail %&gt;%
+  filter(State == "Victoria", Industry == "Cafes, restaurants and takeaway food services")
+```
+&lt;img src="figure/cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+Focus on Victorian cafes and restaurants (why? vic loves coffee + food)
+Detail patterns in data (trend, multiplicative seasonality, noise)
+---
+
+## Half-hourly electricity demand data
+
+
+```r
+tsibbledata::elecdemand
+```
+
+```
+#&gt; # A tsibble: 17,520 x 4 [30m]
+#&gt;    index               Demand WorkDay Temperature
+#&gt;    &lt;dttm&gt;               &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+#&gt;  1 2014-01-01 00:00:00   3.91       0        18.2
+#&gt;  2 2014-01-01 00:30:00   3.67       0        17.9
+#&gt;  3 2014-01-01 01:00:00   3.50       0        17.6
+#&gt;  4 2014-01-01 01:30:00   3.34       0        16.8
+#&gt;  5 2014-01-01 02:00:00   3.20       0        16.3
+#&gt;  6 2014-01-01 02:30:00   3.10       0        16.6
+#&gt;  7 2014-01-01 03:00:00   3.04       0        16.6
+#&gt;  8 2014-01-01 03:30:00   3.01       0        16.7
+#&gt;  9 2014-01-01 04:00:00   3.02       0        16.2
+#&gt; 10 2014-01-01 04:30:00   3.03       0        16.6
+#&gt; # ... with 17,510 more rows
+```
+
+.footnote[Source: Australian Energy Market Operator, and the Australian Bureau of Meteorology]
+
+???
+
+* Data contains only one series (no keys), with 3 variables
+* &gt; 17500 rows
+* Data is for 2014, with half-hourly data
+* We want to forecast Demand.
+
+---
+
+### Electricity demand (Monthly)
+<video autoplay>
+        <source src="resources/anim1.mp4" type="video/mp4">
+      </video>
+
+???
+
+cafe dataset was monthly - if elec demand was monthly it'd look like this.
+Annual seasonal pattern is evident - winter and summer has high demand
+
+---
+
+### Electricity demand (Daily)
+<video autoplay>
+        <source src="resources/anim2.mp4" type="video/mp4">
+      </video>
+
+???
+
+data isn't monthly, if instead it were daily we see more patterns
+annual pattern remains, but now there is a working day / not working day pattern
+also, we start to see noise
+
+---
+
+### Electricity demand (Half-hourly)
+<video autoplay>
+        <source src="resources/anim3.mp4" type="video/mp4">
+      </video>
+
+???
+
+data is actually half-hourly, when plotting this there is too much to see!
+---
+
+### Electricity demand (Half-hourly)
+<video autoplay>
+        <source src="resources/anim4.mp4" type="video/mp4">
+      </video>
+
+???
+
+zooming in, we see half-hourly detail.
+reveals a third seasonal pattern that changes within days
+people demand more electricity when awake, and with peaks in morning and afternoon
+weekend pattern is similar, with a less extreme peak in the morning (relaxed waking hours)
+
+---
+
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[fable]
+
+* A tidy reimplementation of `forecast`
+* Encourages flexible and transparent model design
+* Many more features (the content of this talk!)
+
+&lt;br&gt;
+
+More information:
+
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/fable](https://github.com/tidyverts/fable)
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [TFEAM](#) &amp; [useR!2018](https://github.com/robjhyndman/fable-talk-2018/raw/master/fable_useR2018.pdf)
+
+???
+
+explain fable name
+introduce fable as the tool for tidy forecasting
+keep it brief - as it is the content of the talk! :)
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Model]
+
+## Model specification and estimation
+
+`ETS(tsibble, formula, ...)`
+
+`ARIMA(tsibble, formula, ...)`
+
+`TSLM(tsibble, formula, ...)`
+
+and many more...
+
+???
+
+Before forecasting - we need a model
+at minimum, a model requires a tsibble and a model formula
+in this talk, we'll be modelling with ETS, ARIMA, and TSLM
+
+---
+
+## Model specification - with formulas
+
+Using a formula is a concise method of model specification, and is used in most modelling functions in R. Use of a formula is rare in time series modelling, leading to complicated documentation and verbose interfaces.
+
+
+```r
+transformation(y) ~ trend() + season(period = "day") + x
+```
+
+???
+
+formulas are common in regression models, but not in time series
+formulas are concise and human readable
+
+--
+
+.pull-left[
+
+### LHS: Response
+* Defines the data's response variable
+* Specification of transformations
+  (with automatic back-transformation)
+]
+
+???
+
+also mention bias adjustments
+
+--
+
+.pull-right[
+
+### RHS: Specials
+* Model specific special functions
+* Exogenous regressors
+]
+
+???
+
+discuss with reference to the example formula above
+
+---
+
+## A basic model
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_cafe_fit &lt;- vic_cafe %&gt;%
+  fable::ETS(Turnover ~ season("M"))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model      
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
+```
+
+
+]
+]
+
+???
+
+response is Turnover
+recap why we're using multiplicative seasonality here
+specials not specified (error(), trend()) are automatically chosen to be "M" and "Ad"
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_fit &lt;- ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
+  forecast::ets("ZZM")
+```
+
+```
+...
+#&gt; ETS(M,Ad,M) 
+#&gt; 
+#&gt; Call:
+#&gt;  forecast::ets(y = ., model = "ZZM") 
+#&gt; 
+#&gt;   Smoothing parameters:
+#&gt;     alpha = 0.6299 
+#&gt;     beta  = 0.0172 
+#&gt;     gamma = 1e-04 
+#&gt;     phi   = 0.98 
+...
+```
+
+]
+]
+
+???
+
+here's the same model in forecast would be produced
+notice the unnatural interface for creating a `ts`!
+
+This is frustrating when your data already contains a time column and is prone to errors!
+What is your data had missing values? gaps? ahh!
+
+---
+
+## Modelling with transformations
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+vic_cafe %&gt;%
+  fable::ETS(log(Turnover) ~ season("A"))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model     
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;   
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(A,A,A)
+```
+
+]
+]
+
+???
+
+transformations in fable are natural
+like forecast, they will be automatically back transformed
+note that we now want additive seasonality as logs of multiplicative components gives additive components
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts(vic_cafe$Turnover, start = c(1982, 4), frequency = 12) %&gt;%
+  forecast::ets("ZZA", lambda = 0)
+```
+
+```
+...
+#&gt; ETS(A,A,A) 
+#&gt; 
+#&gt; Call:
+#&gt;  forecast::ets(y = ., model = "ZZA", lambda = 0) 
+#&gt; 
+#&gt;   Box-Cox transformation: lambda= 0 
+#&gt; 
+#&gt;   Smoothing parameters:
+#&gt;     alpha = 0.5827 
+#&gt;     beta  = 1e-04 
+...
+```
+]
+]
+
+???
+
+forecast only supports BoxCox transformations, and you need to know that lambda=0 is a log
+
+fable also supports combinations transformations, such as log(Turnover + 1) for data with low counts and zeroes!
+
+---
+
+## Using exogenous information
+
+&lt;img src="figure/elecdemand-xreg-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+fable makes xreg easy
+elecdemand is strongly driven by temperature
+
+---
+
+## Modelling with exogenous regressors
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+tsbl_elec &lt;- tsibbledata::elecdemand %&gt;% filter(index &lt; ymd("2014-03-01"))
+fbl_elec_fit &lt;- tsbl_elec %&gt;%
+  fable::ARIMA(Demand ~ WorkDay + Temperature + I(Temperature^2) +
+               pdq(1,0,1) + PDQ(1,1,1, period = "day"))
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt;   model                               
+#&gt;   &lt;model&gt;                             
+#&gt; 1 LM w/ ARIMA(1,0,1)(1,1,1)[48] errors
+```
+
+]
+]
+
+???
+
+need to use ARIMA instead of ETS here, as ETS does not support xreg
+xreg can be added to model formula directly
+brief note about pdq being non-seasonal and PDQ being seasonal
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts_elec &lt;- ts(head(fpp2::elecdemand, 2832), frequency = 48)
+fc_elec_fit &lt;- ts_elec[,"Demand"] %&gt;%
+  forecast::Arima(order = c(1,0,1), seasonal = c(1,1,1),
+                  xreg = cbind(ts_elec[,c("WorkDay", "Temperature")],
+                               ts_elec[,"Temperature"]^2))
+```
+
+```
+#&gt; Series: . 
+#&gt; Regression with ARIMA(1,0,1)(1,1,1)[48] errors 
+#&gt; 
+#&gt; Coefficients:
+#&gt;          ar1     ma1    sar1     sma1  ts_elec[, c("WorkDay", "Temperature")].WorkDay
+#&gt;       0.9951  0.7214  0.3221  -0.9137                                          0.0002
+#&gt; s.e.  0.0019  0.0106  0.0224   0.0123                                          0.0074
+#&gt;       ts_elec[, c("WorkDay", "Temperature")].Temperature  ts_elec[, "Temperature"]^2
+#&gt;                                                  -0.0118                       3e-04
+#&gt; s.e.                                                 NaN                       0e+00
+#&gt; 
+#&gt; sigma^2 estimated as 0.002339:  log likelihood=4454.81
+#&gt; AIC=-8893.61   AICc=-8893.56   BIC=-8846.16
+```
+]
+]
+
+???
+
+xreg with forecast is not pretty!
+manipulating the time series object can be hard (no date comparisons here!) and xregs must be specified as a numerical matrix
+
+BUT!
+The forecast output is more informative, we see some coefficients and other interesting things
+In fable, we only see the selected model
+
+---
+class: inverse
+
+.sticker-float[![broom](resources/broom.png)]
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Extract]
+
+## Extract model information using tidy functions
+
+`augment(mable, ...)`
+
+`tidy(mable, ...)`
+
+`glance(mable, ...)`
+
+`components(mable, ...)`
+
+???
+
+to access this extra model information we use tidy verbs
+fable introduces the components verb which extracts model components (such as states from ETS)
+
+---
+
+# Augment tsibble with model fits (broom::augment)
+
+
+```r
+augment(fbl_cafe_fit)
+```
+
+```
+#&gt; # A tsibble: 438 x 6 [1M]
+#&gt; # Key:       State, Industry [1]
+#&gt;       Month State    Industry                                      Turnover .fitted   .resid
+#&gt;       &lt;mth&gt; &lt;chr&gt;    &lt;chr&gt;                                            &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 1982 Apr Victoria Cafes, restaurants and takeaway food services     85.1    84.4  0.00808
+#&gt;  2 1982 May Victoria Cafes, restaurants and takeaway food services     85.1    85.3 -0.00246
+#&gt;  3 1982 Jun Victoria Cafes, restaurants and takeaway food services     82.8    81.8  0.0121 
+#&gt;  4 1982 Jul Victoria Cafes, restaurants and takeaway food services     82.1    86.5 -0.0503 
+#&gt;  5 1982 Aug Victoria Cafes, restaurants and takeaway food services     81.8    85.0 -0.0372 
+#&gt;  6 1982 Sep Victoria Cafes, restaurants and takeaway food services     84.6    82.3  0.0279 
+#&gt;  7 1982 Oct Victoria Cafes, restaurants and takeaway food services     91.7    86.3  0.0620 
+#&gt;  8 1982 Nov Victoria Cafes, restaurants and takeaway food services     97.7    90.7  0.0776 
+#&gt;  9 1982 Dec Victoria Cafes, restaurants and takeaway food services    109.    106.   0.0284 
+#&gt; 10 1983 Jan Victoria Cafes, restaurants and takeaway food services     94.6    96.5 -0.0192 
+#&gt; # ... with 428 more rows
+```
+
+???
+
+adds fitted model information to the model data
+
+---
+
+# Tidy model parameters (broom::tidy)
+
+
+```r
+tidy(fbl_cafe_fit)
+```
+
+```
+#&gt; # A tibble: 17 x 4
+#&gt;    State    Industry                                      term   estimate
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services alpha  0.630   
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services beta   0.0172  
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services gamma  0.000100
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services phi    0.980   
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services l     85.3     
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services b      0.363   
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services s0     1.01    
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services s1     0.926   
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services s2     1.01    
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services s3     1.14    
+#&gt; 11 Victoria Cafes, restaurants and takeaway food services s4     1.02    
+#&gt; 12 Victoria Cafes, restaurants and takeaway food services s5     1.01    
+#&gt; 13 Victoria Cafes, restaurants and takeaway food services s6     0.986   
+#&gt; 14 Victoria Cafes, restaurants and takeaway food services s7     0.997   
+#&gt; 15 Victoria Cafes, restaurants and takeaway food services s8     0.985   
+#&gt; 16 Victoria Cafes, restaurants and takeaway food services s9     0.943   
+#&gt; 17 Victoria Cafes, restaurants and takeaway food services s10    0.986
+```
+
+???
+
+accesses model coefficients in a tidy format
+
+---
+
+# Glance a one-row model summary (broom::glance)
+
+```r
+glance(fbl_cafe_fit)
+```
+
+```
+#&gt; # A tibble: 1 x 11
+#&gt;   State    Industry                                      method      period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)     12 0.0375 -2406. 4848. 4850. 4922.  213.  339.
+```
+
+???
+
+reveals useful model diagnostics such as AIC, sigma, etc.
+
+---
+
+# Extract model components (fable::components)
+
+```r
+components(fbl_cafe_fit)
+```
+
+```
+#&gt; # A tsibble: 439 x 6 [1M]
+#&gt; # Key:       State, Industry [1]
+#&gt;    State    Industry                                         Month level slope season
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  85.3 0.363  1.01 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  86.1 0.368  0.985
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  86.4 0.357  0.986
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  87.4 0.368  0.943
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  85.0 0.284  0.985
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  83.2 0.224  0.997
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  84.9 0.260  0.986
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  88.5 0.345  1.01 
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  93.2 0.457  1.02 
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  95.3 0.494  1.14 
+#&gt; # ... with 429 more rows
+```
+
+???
+
+these components are particularly interesting to plot
+
+---
+
+# Extract model components (fable::components)
+
+```r
+components(fbl_cafe_fit) %&gt;%
+  gather(component, value, level, slope, season) %&gt;%
+  ggplot(aes(x = Month, y = value)) +
+  geom_line() +
+  facet_grid(vars(component), scales = "free_y")
+```
+
+&lt;img src="figure/ets-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+shows upward trend and stable/constant seasonal pattern
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Forecast]
+
+## Forecast future values
+
+`forecast(mable, new_data, h, ...)`
+
+???
+
+Now that we've fitted our model, how do we get our forecasts?
+Can use either new_data or h, h is easier, new_data is more precise and supports xreg
+
+---
+
+## Producing forecasts
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_cafe_fc &lt;- fbl_cafe_fit %&gt;% forecast(h=24)
+```
+
+```
+...
+#&gt; # A fable: 24 x 5 [1M]
+#&gt; # Key:     State, Industry [1]
+#&gt;    State    Industry                                         Month Turnover .distribution   
+#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;          
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     961. N(961, sd = 36) 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     970. N(970, sd = 43) 
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec    1081. N(1081, sd = 55)
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     962. N(962, sd = 55) 
+...
+```
+]
+]
+
+???
+
+quickly here!
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_fc &lt;- fc_fit %&gt;% forecast(h=24)
+```
+
+```
+...
+#&gt;          Point Forecast     Lo 80     Hi 80    Lo 95     Hi 95
+#&gt; Oct 2018       960.6629  914.5063 1006.8196 890.0725 1031.2534
+#&gt; Nov 2018       969.7384  914.2743 1025.2025 884.9134 1054.5634
+#&gt; Dec 2018      1081.4660 1010.7131 1152.2189 973.2587 1189.6733
+#&gt; Jan 2019       961.8541  891.5970 1032.1112 854.4052 1069.3031
+#&gt; Feb 2019       886.9812  815.8195  958.1428 778.1488  995.8135
+#&gt; Mar 2019       973.8124  889.0054 1058.6194 844.1112 1103.5135
+#&gt; Apr 2019       947.9781  859.1613 1036.7948 812.1446 1083.8116
+...
+```
+]
+]
+
+???
+
+same interface.
+you'll find once you have your model fitted, the interface is consistent for all models
+
+Note the difference between intervals and distribution.
+Storing distribution allows us to compute any interval without re-computing forecasts
+
+---
+
+## Producing forecasts
+
+
+```r
+fbl_cafe_fc %&gt;% autoplot(vic_cafe)
+```
+
+&lt;img src="figure/ets-fc-log-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+Can't show a table of forecasts without looking at them too!
+Forecasts look reasonable.
+
+---
+
+## Producing forecasts with new data
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+tsbl_elec_new &lt;- tsibbledata::elecdemand %&gt;%
+  filter(index &gt;= ymd("2014-03-01"), index &lt; ymd("2014-03-14"))
+fbl_elec_fc &lt;- fbl_elec_fit %&gt;%
+  forecast(tsbl_elec_new)
+```
+
+```
+...
+#&gt; # A fable: 624 x 3 [30m]
+#&gt;    index               Demand .distribution     
+#&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;            
+#&gt;  1 2014-03-01 00:00:00   3.99 N(4, sd = 0.048)  
+#&gt;  2 2014-03-01 00:30:00   3.75 N(3.7, sd = 0.096)
+#&gt;  3 2014-03-01 01:00:00   3.60 N(3.6, sd = 0.13) 
+...
+```
+]
+]
+
+???
+
+Forecasting with new data is easy in fable, just provide a tsibble that contains the necessary xregs
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+ts_elec_new &lt;- ts(fpp2::elecdemand[2833:3456,], start = 60, frequency = 48)
+fc_elec_fc &lt;- fc_elec_fit %&gt;%
+  forecast:::forecast.Arima(h=24, xreg = cbind(
+    ts_elec_new[,c("WorkDay", "Temperature")], ts_elec_new[,"Temperature"]^2))
+```
+
+```
+...
+#&gt;          Point Forecast    Lo 80    Hi 80     Lo 95    Hi 95
+#&gt; 60.00000       3.988066 3.926087 4.050045 3.8932776 4.082855
+#&gt; 60.02083       3.749454 3.626331 3.872578 3.5611538 3.937755
+#&gt; 60.04167       3.596770 3.434395 3.759144 3.3484389 3.845100
+#&gt; 60.06250       3.464519 3.270970 3.658068 3.1685111 3.760527
+#&gt; 60.08333       3.372009 3.151901 3.592117 3.0353826 3.708635
+#&gt; 60.10417       3.318911 3.075343 3.562479 2.9464058 3.691416
+#&gt; 60.12500       3.310711 3.045955 3.575468 2.9058013 3.715621
+...
+```
+]
+]
+
+???
+
+this is a bit difficult with forecast, as you need to construct the xreg matrix yourself precisely!
+Also note the time output in forecast vs fable! So many decimals!
+
+---
+
+## Producing forecasts with new data
+
+
+```r
+fbl_elec_fc %&gt;% autoplot(tsbl_elec)
+```
+
+&lt;img src="figure/arima-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+again, need to show the plot!
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Accuracy]
+
+## Accuracy evaluation to compare models
+
+`accuracy(mable, measures, ...)`
+
+`accuracy(fable, new_data, measures, ...)`
+
+???
+
+accuracy can be computed using on a model (in sample) or forecast (out of sample)
+When evaluating forecasts, you must provide new data
+
+fable adds the flexibility to specify a list of accuracy measures!
+Meaning you can remove measures you don't want, add the ones you do, and even specify your own accuracy measure functions
+
+---
+
+## Evaluating model accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_cafe_fit %&gt;% accuracy()
+```
+
+```
+#&gt; # A tibble: 1 x 10
+#&gt; # Groups:   State [?]
+#&gt;   State    Industry                                      Type        ME  RMSE   MAE   MPE  MAPE  ACF1  MASE
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services Training  1.47  14.6  10.4 0.338  2.87 0.131 0.350
+```
+]
+]
+
+???
+quickly
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_fit %&gt;% forecast::accuracy()
+```
+
+```
+#&gt;                    ME     RMSE      MAE       MPE     MAPE      MASE      ACF1
+#&gt; Training set 1.473341 14.59307 10.39603 0.3384752 2.867766 0.3495456 0.1312039
+```
+]
+]
+
+???
+identical interface
+fable keeps contextual information from the keys
+
+---
+
+## Evaluating forecast accuracy
+
+.flex-row[
+.sticker-left[![fable](resources/fable.svg)]
+.flex-col[
+
+```r
+fbl_elec_fc %&gt;% accuracy(tsbl_elec_new)
+```
+
+```
+#&gt; # A tibble: 1 x 7
+#&gt;   Type       ME  RMSE   MAE   MPE  MAPE  ACF1
+#&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 Test  -0.0655 0.505 0.366 -2.54  8.14 0.992
+```
+]
+]
+
+--
+
+&lt;hr&gt;
+
+.flex-row[
+.sticker-left[![forecast](resources/forecast.svg)]
+.flex-col[
+
+```r
+fc_elec_fc %&gt;% forecast::accuracy(ts_elec_new[,"Demand"])
+```
+
+```
+#&gt;                        ME       RMSE        MAE         MPE      MAPE       MASE      ACF1 Theil's U
+#&gt; Training set  0.000352514 0.04789049 0.03483026  0.01553156 0.7183844 0.05865179 0.4352692        NA
+#&gt; Test set     -0.065460770 0.50458482 0.36563548 -2.53964478 8.1384634 0.61570527 0.9924566  3.319844
+```
+]
+]
+
+???
+
+interface is similar, although forecast requires you to specify a univariate time series to compare against
+forecast provides both training and test accuracy here, despite only providing forecasts (can be confusing)
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+# Forecasting with tables
+
+
+```r
+fbl_cafe_fit
+```
+
+```
+#&gt; # A mable: 1 model
+#&gt; # Key:     State, Industry [1]
+#&gt;   State    Industry                                      model      
+#&gt;   &lt;chr&gt;    &lt;chr&gt;                                         &lt;model&gt;    
+#&gt; 1 Victoria Cafes, restaurants and takeaway food services ETS(M,Ad,M)
+```
+
+???
+
+reiterate the package name - fable is for forecasting with tables
+there's a reason why this output is a bit suspicious, a table containing one model?
+
+--
+
+
+```r
+tsibbledata::ausretail
+```
+
+```
+#&gt; # A tsibble: 64,088 x 5 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State                        Industry                                 `Series ID`    Month Turnover
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;          &lt;mth&gt;    &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Apr      4.4
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 May      3.4
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jun      3.6
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Jul      4  
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Aug      3.6
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Sep      4.2
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Oct      4.8
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Nov      5.4
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1982 Dec      6.9
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services A3349849A   1983 Jan      3.8
+#&gt; # ... with 64,078 more rows
+```
+
+???
+
+but our dataset is a time series containing 152 series!
+if only we could forecast them all?
+
+---
+
+# Estimate
+
+
+```r
+retail_ets &lt;- tsibbledata::ausretail %&gt;%
+  ETS(Turnover)
+```
+
+```
+#&gt; # A mable: 152 models
+#&gt; # Key:     State, Industry [152]
+#&gt;    State                        Industry                                                          model     
+#&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                                             &lt;model&gt;   
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services                          ETS(M,A,A)
+#&gt;  2 Australian Capital Territory Cafes, restaurants and takeaway food services                     ETS(M,A,M)
+#&gt;  3 Australian Capital Territory Clothing retailing                                                ETS(M,A,M)
+#&gt;  4 Australian Capital Territory Clothing, footwear and personal accessory retailing               ETS(M,A,M)
+#&gt;  5 Australian Capital Territory Department stores                                                 ETS(M,A,M)
+#&gt;  6 Australian Capital Territory Electrical and electronic goods retailing                         ETS(M,A,M)
+#&gt;  7 Australian Capital Territory Food retailing                                                    ETS(M,A,M)
+#&gt;  8 Australian Capital Territory Footwear and other personal accessory retailing                   ETS(M,A,M)
+#&gt;  9 Australian Capital Territory Furniture, floor coverings, houseware and textile goods retailing ETS(M,A,M)
+#&gt; 10 Australian Capital Territory Hardware, building and garden supplies retailing                  ETS(M,A,M)
+#&gt; # ... with 142 more rows
+```
+
+???
+
+that's exactly what we can do!
+fable naturally supports batch forecasting for each series
+we now have 152 models, using the same code as before
+
+here we haven't specified any model specials, so everything is automatically selected
+the first model is slightly different from the rest
+
+---
+
+# Extract (broom::augment)
+
+
+```r
+augment(retail_ets)
+```
+
+```
+#&gt; # A tsibble: 64,088 x 6 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;       Month State                        Industry                                 Turnover .fitted   .resid
+#&gt;       &lt;mth&gt; &lt;chr&gt;                        &lt;chr&gt;                                       &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt;  1 1982 Apr Australian Capital Territory Cafes, restaurants and catering services      4.4    3.92  0.124  
+#&gt;  2 1982 May Australian Capital Territory Cafes, restaurants and catering services      3.4    3.92 -0.132  
+#&gt;  3 1982 Jun Australian Capital Territory Cafes, restaurants and catering services      3.6    3.63 -0.00866
+#&gt;  4 1982 Jul Australian Capital Territory Cafes, restaurants and catering services      4      4.32 -0.0747 
+#&gt;  5 1982 Aug Australian Capital Territory Cafes, restaurants and catering services      3.6    4.15 -0.133  
+#&gt;  6 1982 Sep Australian Capital Territory Cafes, restaurants and catering services      4.2    4.63 -0.0927 
+#&gt;  7 1982 Oct Australian Capital Territory Cafes, restaurants and catering services      4.8    4.96 -0.0331 
+#&gt;  8 1982 Nov Australian Capital Territory Cafes, restaurants and catering services      5.4    5.12  0.0549 
+#&gt;  9 1982 Dec Australian Capital Territory Cafes, restaurants and catering services      6.9    6.88  0.00276
+#&gt; 10 1983 Jan Australian Capital Territory Cafes, restaurants and catering services      3.8    4.25 -0.105  
+#&gt; # ... with 64,078 more rows
+```
+
+???
+
+quickly through extract functions
+
+We can extract model fits and residuals with augments
+
+---
+
+# Extract (broom::tidy)
+
+
+```r
+tidy(retail_ets)
+```
+
+```
+#&gt; # A tibble: 2,433 x 4
+#&gt;    State                        Industry                                 term   estimate
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                    &lt;chr&gt;     &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services alpha  0.520   
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services beta   0.000100
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services gamma  0.0800  
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services l      4.08    
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services b      0.130   
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services s0    -0.291   
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services s1    -0.852   
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services s2    -0.488   
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services s3     2.29    
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services s4     0.799   
+#&gt; # ... with 2,423 more rows
+```
+
+???
+
+Look at the fitted coefficients
+
+---
+
+# Extract (broom::glance)
+
+```r
+glance(retail_ets)
+```
+
+```
+#&gt; # A tibble: 152 x 11
+#&gt;    State              Industry                               method   period  sigma logLik   AIC  AICc   BIC   MSE  AMSE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                  &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering servi… ETS(M,A…     12 0.0955 -1527. 3088. 3090. 3158. 2.99  4.08 
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food … ETS(M,A…     12 0.0663 -1586. 3205. 3207. 3275. 3.77  5.81 
+#&gt;  3 Australian Capita… Clothing retailing                     ETS(M,A…     12 0.0767 -1228. 2489. 2491. 2558. 0.792 1.07 
+#&gt;  4 Australian Capita… Clothing, footwear and personal acces… ETS(M,A…     12 0.0623 -1350. 2735. 2736. 2804. 1.52  1.89 
+#&gt;  5 Australian Capita… Department stores                      ETS(M,A…     12 0.0619 -1481. 2997. 2998. 3066. 2.01  2.02 
+#&gt;  6 Australian Capita… Electrical and electronic goods retai… ETS(M,A…     12 0.0903 -1477. 2988. 2990. 3058. 2.45  3.56 
+#&gt;  7 Australian Capita… Food retailing                         ETS(M,A…     12 0.0330 -1725. 3483. 3485. 3553. 6.05  7.35 
+#&gt;  8 Australian Capita… Footwear and other personal accessory… ETS(M,A…     12 0.0666  -958. 1950. 1952. 2020. 0.341 0.420
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware… ETS(M,A…     12 0.0889 -1385. 2804. 2805. 2873. 2.30  3.10 
+#&gt; 10 Australian Capita… Hardware, building and garden supplie… ETS(M,A…     12 0.0918 -1282. 2599. 2600. 2668. 1.24  1.47 
+#&gt; # ... with 142 more rows
+```
+
+???
+
+See the model summary statistics
+
+---
+
+# Extract (fable::components)
+
+```r
+components(retail_ets)
+```
+
+```
+#&gt; # A tsibble: 64,240 x 6 [1M]
+#&gt; # Key:       State, Industry [152]
+#&gt;    State                        Industry                                    Month level slope season
+#&gt;    &lt;chr&gt;                        &lt;chr&gt;                                       &lt;mth&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services 1982 Apr  4.08 0.130 -0.291
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services 1982 May  4.46 0.130 -0.253
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services 1982 Jun  4.32 0.130 -0.715
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services 1982 Jul  4.43 0.130 -0.822
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services 1982 Aug  4.40 0.130 -0.267
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services 1982 Sep  4.24 0.130 -0.420
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services 1982 Oct  4.15 0.130  0.225
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services 1982 Nov  4.19 0.130  0.675
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services 1982 Dec  4.47 0.130  0.821
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services 1983 Jan  4.61 0.130  2.29 
+#&gt; # ... with 64,230 more rows
+```
+
+???
+
+and view the components
+this is particularly interesting to visualise
+
+---
+
+# Extract (fable::components)
+
+
+```r
+components(retail_ets) %&gt;%
+  filter(Industry == "Cafes, restaurants and takeaway food services") %&gt;%
+  ggplot(aes(x = Month, y = level, colour = State)) +
+  geom_line()
+```
+
+&lt;img src="figure/batch-components-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+here is the level state from all of the AUS for cafe/restaurant turnover
+We can see without seasonality that NSW has highest turnover, followed by VIC.
+
+---
+
+# Forecast
+
+
+```r
+retail_fc &lt;- retail_ets %&gt;%
+  forecast(h=24)
+```
+
+```
+#&gt; # A fable: 3,648 x 5 [1M]
+#&gt; # Key:     State, Industry [152]
+#&gt;    State                        Industry                                    Month Turnover .distribution  
+#&gt;  * &lt;chr&gt;                        &lt;chr&gt;                                       &lt;mth&gt;    &lt;dbl&gt; &lt;dist&gt;         
+#&gt;  1 Australian Capital Territory Cafes, restaurants and catering services 2018 Oct     42.0 N(42, sd = 4)  
+#&gt;  2 Australian Capital Territory Cafes, restaurants and catering services 2018 Nov     42.0 N(42, sd = 4.5)
+#&gt;  3 Australian Capital Territory Cafes, restaurants and catering services 2018 Dec     43.5 N(44, sd = 5.1)
+#&gt;  4 Australian Capital Territory Cafes, restaurants and catering services 2019 Jan     38.5 N(38, sd = 5.2)
+#&gt;  5 Australian Capital Territory Cafes, restaurants and catering services 2019 Feb     41.8 N(42, sd = 5.8)
+#&gt;  6 Australian Capital Territory Cafes, restaurants and catering services 2019 Mar     45.1 N(45, sd = 6.3)
+#&gt;  7 Australian Capital Territory Cafes, restaurants and catering services 2019 Apr     42.0 N(42, sd = 6.5)
+#&gt;  8 Australian Capital Territory Cafes, restaurants and catering services 2019 May     43.1 N(43, sd = 6.9)
+#&gt;  9 Australian Capital Territory Cafes, restaurants and catering services 2019 Jun     42.3 N(42, sd = 7.2)
+#&gt; 10 Australian Capital Territory Cafes, restaurants and catering services 2019 Jul     43.2 N(43, sd = 7.6)
+#&gt; # ... with 3,638 more rows
+```
+
+???
+to forecast the models is just as easy!
+here we are forecasting 24 steps ahead from the last observation of each series
+
+---
+
+&lt;img src="figure/batch-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+incase you don't believe it because the code is so simple... here's the proof
+All 152 forecasts plotted with 80% and 95% intervals
+
+Very hard to see/visualise this many series, so let's focus on the cafe industry
+
+---
+
+&lt;img src="figure/batch-fc-cafe-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+Good separation of series, the forecasts for each series appears reasonable
+
+---
+
+# Evaluate
+
+
+```r
+retail_ets %&gt;% accuracy()
+```
+
+```
+#&gt; # A tibble: 152 x 10
+#&gt; # Groups:   State [?]
+#&gt;    State              Industry                                 Type          ME  RMSE   MAE     MPE  MAPE     ACF1  MASE
+#&gt;    &lt;chr&gt;              &lt;chr&gt;                                    &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 Australian Capita… Cafes, restaurants and catering services Traini… -0.0789  1.73  1.25  -1.39    7.05  1.09e-1 0.425
+#&gt;  2 Australian Capita… Cafes, restaurants and takeaway food se… Traini… -0.0728  1.94  1.40  -0.721   4.93  4.41e-2 0.403
+#&gt;  3 Australian Capita… Clothing retailing                       Traini…  0.00299 0.890 0.645 -0.533   5.81  1.51e-1 0.519
+#&gt;  4 Australian Capita… Clothing, footwear and personal accesso… Traini…  0.0422  1.23  0.861 -0.347   4.65  2.51e-1 0.567
+#&gt;  5 Australian Capita… Department stores                        Traini… -0.146   1.42  1.05  -0.805   4.53 -1.18e-1 0.751
+#&gt;  6 Australian Capita… Electrical and electronic goods retaili… Traini…  0.00335 1.56  1.09  -0.933   6.57  3.58e-2 0.497
+#&gt;  7 Australian Capita… Food retailing                           Traini…  0.112   2.46  1.82   0.0573  2.36  2.83e-2 0.314
+#&gt;  8 Australian Capita… Footwear and other personal accessory r… Traini…  0.0219  0.584 0.375 -0.403   4.98  2.23e-1 0.587
+#&gt;  9 Australian Capita… Furniture, floor coverings, houseware a… Traini… -0.0379  1.52  0.964 -0.953   6.35  6.48e-2 0.435
+#&gt; 10 Australian Capita… Hardware, building and garden supplies … Traini…  0.00548 1.11  0.751 -0.759   6.95  9.89e-4 0.572
+#&gt; # ... with 142 more rows
+```
+
+???
+
+accuracy evaluation is just as easy
+scale independent measures such as MAPE and MASE are more meaningful here for comparison (as each series is on different scales)
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Extending fable]
+
+???
+
+so that's the core functionality of fable so far, we're working steadily to introduce new things.
+
+fable is designed to be a modelling ecosystem rather than just one package.
+
+--
+
+## fable is extensible by design
+
+Extension packages can:
+
+* Define new transformations
+* Provide new accuracy measures
+* Introduce new models
+
+Which will then be usable with all other transformations, measures and models!
+
+???
+
+read slide
+
+---
+class: inverse, top
+
+.sticker-float[![fasster](resources/fasster.png)]
+
+.title[fasster]
+
+* A model for switching temporal patterns
+* Supports exogenous regressors and handles missing values
+* Flexible model specification
+
+&lt;br&gt;
+
+More information:
+
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; [tidyverts/fasster](https://github.com/tidyverts/fasster)
+* &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; [useR!2018](https://mitchelloharawild.com/user2018/)
+
+???
+
+The first extension package for fable is fasster.
+fasster is a model extension, which works best on data with switching patterns
+it supports xreg and missing values, and has flexible model specification thanks to fable
+
+this will be a very brief introduction - more details are available on GitHub and in the useR talk
+
+---
+
+## Switching seasonality
+
+&lt;img src="figure/fasster-noswitching-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+here is the zoomed in electricity demand data
+
+---
+
+## Switching seasonality
+
+&lt;img src="figure/fasster-switching-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+remember, we saw a separate daily pattern for working days and non working days
+our arima model didn't perform very well because it didn't capture this pattern
+
+this pattern is common in most sub-daily time series, which are becoming more common!
+
+---
+
+# Forecasting with fasster
+
+
+```r
+fasster_fit &lt;- tsbl_elec %&gt;%
+  fasster(log(Demand) ~ WorkDay %S% (trig(48, 16) + poly(1)) + Temperature + I(Temperature^2))
+```
+
+
+```
+#&gt; # A mable: 1 model
+#&gt;   model  
+#&gt;   &lt;model&gt;
+#&gt; 1 FASSTER
+```
+
+???
+
+fasster uses the same model interface as fable
+I've chosen to use a log transformation, which will be automatically back transformed by fable
+
+My formula specification includes trig seasonality for the daily pattern, and a level, which switches for working and non-working days.
+I've also included Temperature and Temperature^2 as xregs
+
+--
+
+
+```r
+fasster_fc &lt;- fasster_fit %&gt;%
+  forecast(tsbl_elec_new)
+```
+
+
+```
+#&gt; # A fable: 624 x 3 [30m]
+#&gt;    index               Demand .distribution        
+#&gt;  * &lt;dttm&gt;               &lt;dbl&gt; &lt;dist&gt;               
+#&gt;  1 2014-03-01 00:00:00   3.76 t(N(1.3, sd = 0.066))
+#&gt;  2 2014-03-01 00:30:00   3.49 t(N(1.2, sd = 0.067))
+#&gt;  3 2014-03-01 01:00:00   3.35 t(N(1.2, sd = 0.067))
+#&gt;  4 2014-03-01 01:30:00   3.22 t(N(1.2, sd = 0.067))
+#&gt;  5 2014-03-01 02:00:00   3.11 t(N(1.1, sd = 0.068))
+#&gt;  6 2014-03-01 02:30:00   3.05 t(N(1.1, sd = 0.068))
+#&gt;  7 2014-03-01 03:00:00   3.01 t(N(1.1, sd = 0.069))
+#&gt;  8 2014-03-01 03:30:00   3.00 t(N(1.1, sd = 0.069))
+#&gt;  9 2014-03-01 04:00:00   3.02 t(N(1.1, sd = 0.07)) 
+#&gt; 10 2014-03-01 04:30:00   3.06 t(N(1.1, sd = 0.07)) 
+#&gt; # ... with 614 more rows
+```
+
+???
+Once I've fitted the model, the function to get forecasts is identical to the ARIMA example.
+We get our fable as a result (note that the distribution is transformed!)
+
+---
+
+# Forecasting with fasster
+
+```r
+fasster_fc %&gt;%
+  autoplot(tsbl_elec)
+```
+
+&lt;img src="figure/fasster-elecfc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+the forecasts look much better than ARIMA, as the model is better specified to capture the data patterns.
+
+---
+class: inverse
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[What's next?]
+
+# A peek into the future of fable!
+
+???
+
+Lot's of new features are planned.
+All of the code/examples presented here is implemented and usable.
+
+---
+
+## `simulate()` future paths
+
+
+```r
+set.seed(20181108)
+vic_cafe_sim &lt;- fbl_cafe_fit %&gt;%
+  simulate(h = 24, times = 5)
+```
+
+```
+#&gt; # A tsibble: 120 x 5 [1M]
+#&gt; # Key:       .rep, State, Industry [5]
+#&gt;    State    Industry                                         Month  .rep  .sim
+#&gt;    &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 2018 Oct     1  946.
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 2018 Nov     1  931.
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 2018 Dec     1 1018.
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 2019 Jan     1  854.
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 2019 Feb     1  789.
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 2019 Mar     1  879.
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 2019 Apr     1  844.
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 2019 May     1  785.
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 2019 Jun     1  743.
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 2019 Jul     1  764.
+#&gt; # ... with 110 more rows
+```
+
+???
+
+simulating data is a nice way to present the uncertainty in forecasts
+here we're using the vic_cafe ETS model and simulating 24 steps ahead 5 times
+
+---
+
+## `simulate()` future paths
+
+
+```r
+vic_cafe %&gt;%
+  filter(year(Month) &gt;= 2010) %&gt;%
+  autoplot(Turnover) +
+  geom_line(aes(y = .sim, group = .rep), alpha = 0.3, data = vic_cafe_sim)
+```
+
+&lt;img src="figure/vic-cafe-sim-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+from the simulation you can see substantial uncertainty.
+the seasonal pattern is still evident.
+
+---
+
+## `interpolate()` missing values
+
+.float-left[
+
+```r
+tsibbledata::olympic_running
+```
+
+```
+#&gt; # A tsibble: 312 x 4 [4Y]
+#&gt; # Key:       Length, Sex [14]
+#&gt;     Year Length Sex    Time
+#&gt;    &lt;dbl&gt; &lt;fct&gt;  &lt;chr&gt; &lt;dbl&gt;
+#&gt;  1  1896 100m   men    12  
+#&gt;  2  1900 100m   men    11  
+#&gt;  3  1904 100m   men    11  
+#&gt;  4  1908 100m   men    10.8
+#&gt;  5  1912 100m   men    10.8
+#&gt;  6  1916 100m   men    NA  
+#&gt;  7  1920 100m   men    10.8
+#&gt;  8  1924 100m   men    10.6
+#&gt;  9  1928 100m   men    10.8
+#&gt; 10  1932 100m   men    10.3
+#&gt; # ... with 302 more rows
+```
+]
+
+.plot-right-absolute[
+&lt;img src="figure/olympic-running-miss-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+.footnote[Source: The International Olympic Committee ([www.olympic.org](www.olympic.org))]
+
+???
+
+Missing values are especially relevant for modern time series datasets
+if you observe things more frequently, there is a higher chance something will go wrong
+
+This data is the fastest running time from the olympics (men and women, 100m-10,000m)
+The data has missing values in 1916, 1940, and 1944 due to the world wars.
+
+---
+
+## `interpolate()` missing values
+
+.float-left[
+
+```r
+olympic_complete &lt;- olympic_running %&gt;%
+  TSLM(Time ~ trend()) %&gt;%
+  interpolate(olympic_running)
+```
+
+```
+#&gt; # A tsibble: 312 x 4 [4Y]
+#&gt; # Key:       Length, Sex [14]
+#&gt;    Length Sex    Year  Time
+#&gt;    &lt;fct&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1 100m   men    1896  12  
+#&gt;  2 100m   men    1900  11  
+#&gt;  3 100m   men    1904  11  
+#&gt;  4 100m   men    1908  10.8
+#&gt;  5 100m   men    1912  10.8
+#&gt;  6 100m   men    1916  10.8
+#&gt;  7 100m   men    1920  10.8
+#&gt;  8 100m   men    1924  10.6
+#&gt;  9 100m   men    1928  10.8
+#&gt; 10 100m   men    1932  10.3
+#&gt; # ... with 302 more rows
+```
+]
+
+.plot-right-absolute[
+&lt;img src="figure/olympic-running-completed-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+???
+
+model based interpolation in fable is easy.
+here we've fitted a LM with linear trend, and used it to interpolate the data.
+
+---
+
+# `refit()` and `stream()` new data
+
+`refit()` allows a model to be applied to a new dataset.
+
+`stream()` allows a model to be extended using new data.
+
+???
+
+similar functions in that they modify a model to suit new data.
+
+--
+
+Models parameters can be re-estimated (could be time consuming) or not.
+
+---
+
+# `stream()` new data
+
+
+```r
+fasster_fc
+```
+
+&lt;img src="figure/fasster-fc-recall-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+earlier, we fitted a fasster model to electricity demand and got these forecasts
+
+---
+
+# `stream()` new data
+
+
+```r
+tsbl_elec_new
+```
+
+&lt;img src="figure/stream-data-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+well, two weeks later we've gotten more data!
+normally to include this new information we would need to re-estimate the full model again (could be time consuming!)
+
+---
+
+# `stream()` new data
+
+
+```r
+fasster_stream &lt;- fasster_fit %&gt;% stream(tsbl_elec_new)
+```
+
+&lt;img src="figure/fasster-stream-fc-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+using stream(), we update the fitted model to include the new data, without needing to re-estimate the full model.
+
+---
+
+# Decomposition forecasting
+
+
+```r
+library(tsibblestats)
+cafe_dcmp &lt;- vic_cafe %&gt;%
+  STL(log(Turnover))
+```
+
+
+```
+#&gt; # A dable:       438 x 6 [1M]
+#&gt; # Key:           State, Industry [1]
+#&gt; # Decomposition: Turnover = trend + season_year + remainder
+#&gt;    State    Industry                                         Month trend season_year remainder
+#&gt;  * &lt;chr&gt;    &lt;chr&gt;                                            &lt;mth&gt; &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+#&gt;  1 Victoria Cafes, restaurants and takeaway food services 1982 Apr  4.46   -0.0295     0.0131 
+#&gt;  2 Victoria Cafes, restaurants and takeaway food services 1982 May  4.46   -0.0109    -0.0101 
+#&gt;  3 Victoria Cafes, restaurants and takeaway food services 1982 Jun  4.47   -0.0738     0.0207 
+#&gt;  4 Victoria Cafes, restaurants and takeaway food services 1982 Jul  4.47   -0.0354    -0.0308 
+#&gt;  5 Victoria Cafes, restaurants and takeaway food services 1982 Aug  4.48   -0.0166    -0.0571 
+#&gt;  6 Victoria Cafes, restaurants and takeaway food services 1982 Sep  4.48   -0.0206    -0.0234 
+#&gt;  7 Victoria Cafes, restaurants and takeaway food services 1982 Oct  4.49    0.0274     0.00536
+#&gt;  8 Victoria Cafes, restaurants and takeaway food services 1982 Nov  4.49    0.0401     0.0525 
+#&gt;  9 Victoria Cafes, restaurants and takeaway food services 1982 Dec  4.49    0.164      0.0374 
+#&gt; 10 Victoria Cafes, restaurants and takeaway food services 1983 Jan  4.50    0.000138   0.0532 
+#&gt; # ... with 428 more rows
+```
+
+???
+
+decompositions are also a useful forecasting technique
+in forecast, stl forecasting is possible
+
+in fable, there are plans to be able to forecast the components from any decomposition
+here we have decomposed the cafe data using STL
+the dable knows how to recombine components to get the original forecast
+
+---
+
+# Decomposition forecasting
+
+&lt;img src="figure/stl-decomposition-plot-1.svg" style="display: block; margin: auto;" /&gt;
+
+???
+
+here's a plot of those components.
+
+Providing new decomposition functions is another way that fable can be extended
+
+---
+
+# Interval and distribution accuracy
+
+Winker's score for interval accuracy:
+`$$W(\ell_t,u_t,y_t) = \begin{cases} (u_t-\ell_t) &amp; \ell_t &lt; y_t &lt; u_t \\
+    (u_t-\ell_t) + \frac{2}{\alpha}(\ell_t-y_t) &amp; y_t &lt; \ell_t \\
+    (u_t-\ell_t) + \frac{2}{\alpha}(y_t-u_t) &amp; y_t &gt; u_t.\end{cases}$$`
+
+Percentile scoring for distribution accuracy:
+`$$L(q_{i,t}, y_t) = \begin{cases} (1 - i/100) (q_{i,t} - y_t) &amp; y_t&lt; q_{i,t}\\
+	  (i/100) (y_t - q_{i,t}) &amp; y_t\ge q_{i,t}.\end{cases}$$`
+
+???
+
+Evaluating the accuracy of prediction intervals is also possible in fable.
+Currently two measures are supported, winker's for interval accuracy and percentile for distributions
+
+---
+
+# Interval and distribution accuracy
+
+
+```r
+fbl_elec_fc %&gt;%
+  accuracy(
+    new_data = tsbl_elec_new,
+    measures = list(winkler = winkler_score, percentile = percentile_score)
+  )
+```
+
+```
+#&gt; # A tibble: 1 x 3
+#&gt;   Type  winkler percentile
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+#&gt; 1 Test     4.97      0.197
+```
+
+???
+
+You can use them by adding them to the accuracy measures.
+
+---
+
+# More modelling methods
+
+- BATS/TBATS
+- DSHW
+- NNAR
+- THETA
+- CROSTON
+- Structural models (StructTS)
+
+--
+
+(any many more...)
+
+???
+
+There are many more modelling functions available in forecast left to add into fable.
+fable will keep growing and getting better
+
+---
+
+class: inverse, top
+
+.sticker-float[![fable](resources/fable.svg)]
+
+.title[Thanks! &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M416 192c0-88.4-93.1-160-208-160S0 103.6 0 192c0 34.3 14.1 65.9 38 92-13.4 30.2-35.5 54.2-35.8 54.5-2.2 2.3-2.8 5.7-1.5 8.7S4.8 352 8 352c36.6 0 66.9-12.3 88.7-25 32.2 15.7 70.3 25 111.3 25 114.9 0 208-71.6 208-160zm122 220c23.9-26 38-57.7 38-92 0-66.9-53.5-124.2-129.3-148.1.9 6.6 1.3 13.3 1.3 20.1 0 105.9-107.7 192-240 192-10.8 0-21.3-.8-31.7-1.9C207.8 439.6 281.8 480 368 480c41 0 79.1-9.2 111.3-25 21.8 12.7 52.1 25 88.7 25 3.2 0 6.1-1.9 7.3-4.8 1.3-2.9.7-6.3-1.5-8.7-.3-.3-22.4-24.2-35.8-54.5z"/&gt;&lt;/svg&gt;]
+
+&lt;br&gt;
+
+.larger[
+&lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/&gt;&lt;/svg&gt; Learn more on GitHub: [tidyverts/fable](https://github.com/tidyverts/fable)
+
+&lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 512 512"&gt;&lt;path d="M500 384c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v308h436zM456 96H344c-21.4 0-32.1 25.9-17 41l32.9 32.9-72 72.9-55.6-55.6c-4.7-4.7-12.2-4.7-16.9 0L96.4 305c-4.7 4.6-4.8 12.2-.2 16.9l28.5 29.4c4.7 4.8 12.4 4.9 17.1.1l82.1-82.1 55.5 55.5c4.7 4.7 12.3 4.7 17 0l109.2-109.2L439 249c15.1 15.1 41 4.4 41-17V120c0-13.3-10.7-24-24-24z"/&gt;&lt;/svg&gt; Keep updated: [tidyverts.org](http://www.tidyverts.org)
+
+&lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 576 512"&gt;&lt;path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/&gt;&lt;/svg&gt; Review slides: [mitchelloharawild.com/fable-tfeam](https://mitchelloharawild.com/fable-tfeam)
+
+&lt;br&gt;
+
+.footnote[This work is licensed as &lt;svg style="height:0.8em;top:.04em;position:relative;fill:white;" viewBox="0 0 496 512"&gt;&lt;path d="M254.8 214.8l-33.2 17.3c-9.4-19.6-25.2-19.9-27.5-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.7-7.1 30.6-21.3l30.6 15.5c-6.2 11.5-25.7 39-65.1 39-22.6 0-74-10.3-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 66 36zm143.1 0l-32.8 17.3c-9.5-19.8-25.7-19.9-27.9-19.9-22.1 0-33.2 14.6-33.2 43.8 0 23.6 9.2 43.8 33.2 43.8 14.5 0 24.6-7.1 30.5-21.3l31 15.5c-2.1 3.7-21.4 39-65.1 39-22.7 0-74-9.9-74-77.1 0-58.7 43-77.1 72.6-77.1 30.8.2 52.7 12.1 65.7 36zM247.6 8C389.4 8 496 118.1 496 256c0 147.1-118.5 248-248.4 248C113.6 504 0 394.5 0 256 0 123.1 104.7 8 247.6 8zm.8 44.7C130.2 52.7 44.7 150.6 44.7 256c0 109.8 91.2 202.8 203.7 202.8 103.2 0 202.8-81.1 202.8-202.8.1-113.8-90.2-203.3-202.8-203.3z"/&gt;&lt;/svg&gt; BY-NC 4.0.]
+]
+    </textarea>
+<script src="./libs/remark-latest.min.js"></script>
+<script src="./libs/jquery/jquery.min.js"></script>
+<script src="./libs/slides.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"ratio": "16:9",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
